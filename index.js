@@ -1,25 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const { sequelize } = require('./src/models/inventory'); // Adjust the path if needed
-const purchaseRoutes = require('./routes/purchaseRoutes'); 
-require('dotenv').config(); // Load environment variables from .env file
-const { Pool } = require('pg');
-const { Sequelize } = require('sequelize'); // Import Sequelize
+const sequelize = require('./src/db'); // Import from db.js
+const purchaseRoutes = require('./src/routes/purchaseRoutes');
 
 const app = express();
 app.use(express.json());
 
-
 app.use('/api/v1', purchaseRoutes);
-
-// Create a new instance of Sequelize using environment variables
-const sequelizes = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  dialect: 'postgres',
-});
-
-app.use('/api/v1/inventory', inventoryRoutes);
 
 /**
  * Connect to the database and sync models.
@@ -29,8 +16,8 @@ const connectToDatabase = async (retries = 2, delay = 3000) => {
   try {
     console.log('Attempting to connect to the database...');
 
-    // Sync all models with the database (drops and recreates tables)
-    await sequelizes.sync({ force: true });
+    // Sync all models with the database (updates tables, no drop)
+    await sequelize.sync({ alter: true });
     console.log('Database connected successfully.');
 
   } catch (error) {
@@ -46,19 +33,9 @@ const connectToDatabase = async (retries = 2, delay = 3000) => {
   }
 };
 
-/**
- * Main function to start the connection process.
- */
-const initDatabase = async () => {
-  await connectToDatabase(); // Attempt to connect to the database
-  await sequelizes.close(); // Close the connection when done
-};
-
-
-
 // Start the server and connect to the database
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`Server running on PORT:${PORT}`);
-  await initDatabase(); // Connect to the database
+  await connectToDatabase(); // Connect to the database
 });
