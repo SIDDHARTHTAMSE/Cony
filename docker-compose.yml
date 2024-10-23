@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: node-server
+    ports:
+      - "3000:3000"  # Map local port 3000 to the container's port 3000
+    environment:
+      - DB_NAME=inventory_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - PORT=3000
+    volumes:
+      - .:/app            # Mount the local directory to the container
+      - /app/node_modules # Avoid overriding node_modules
+    depends_on:
+      - db # Ensure PostgreSQL starts before the Node.js server
+    command: ["nodemon", "index.js"] # Run nodemon on startup
+
+  db:
+    image: postgres:14
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist data
+
+volumes:
+  pgdata: # PostgreSQL volume to persist database data
