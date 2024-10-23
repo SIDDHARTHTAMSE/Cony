@@ -1,6 +1,6 @@
 // controllers/purchaseController.js
-const Purchase = require('../models/purchase');
-const Product = require('../models/product');
+const Purchase = require('../models/Purchase');
+const Product = require('../models/Product');
 
 // Create a purchase
 exports.createPurchase = async (req, res) => {

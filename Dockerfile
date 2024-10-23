@@ -1,4 +1,4 @@
-# Use official Node.js image
+# Use the official Node.js image
 FROM node:18
 
 # Set working directory
