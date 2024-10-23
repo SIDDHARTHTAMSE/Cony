@@ -1,13 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const { sequelize } = require('./src/models/inventory'); // Adjust the path if needed
-const inventoryRoutes = require('./src/routes/inventory');// Importing inventory routes 
+const purchaseRoutes = require('./routes/purchaseRoutes'); 
 require('dotenv').config(); // Load environment variables from .env file
 const { Pool } = require('pg');
 const { Sequelize } = require('sequelize'); // Import Sequelize
 
 const app = express();
 app.use(express.json());
+
+
+app.use('/api/v1', purchaseRoutes);
 
 // Create a new instance of Sequelize using environment variables
 const sequelizes = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
