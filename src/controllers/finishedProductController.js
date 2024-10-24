@@ -7,7 +7,6 @@ const finishedProductSchema = z.object({
   manufactured_date: z.string().nonempty("Manufactured date is required"),
   manufactured_quantity: z.number().min(1, "Manufactured quantity must be greater than 0"),
   available_quantity: z.number().min(0, "Available quantity must be greater than or equal to 0"),
-  status: z.enum(["available", "out of stock"], "Status must be 'available' or 'out of stock'"),
 });
 
 //Create a new Finished Product
