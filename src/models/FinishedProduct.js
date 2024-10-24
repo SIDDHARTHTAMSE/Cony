@@ -27,10 +27,6 @@ const FinishedProduct = sequelize.define('FinishedProduct', {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  status: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 }, { tableName: 'finished_products' });
 
 module.exports = FinishedProduct;
