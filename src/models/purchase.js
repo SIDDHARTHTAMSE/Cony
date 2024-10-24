@@ -27,10 +27,6 @@ const Purchase = sequelize.define('Purchase', {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  status: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 }, { tableName: 'purchases' });
 
 module.exports = Purchase;
