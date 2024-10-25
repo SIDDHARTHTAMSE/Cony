@@ -1,9 +1,22 @@
-// controllers/purchaseController.js
+const { z } = require('zod'); // Import Zod for validation
 const Purchase = require('../models/Purchase');
 const Product = require('../models/Product');
 
+// Define Zod schema for purchase data validation
+const purchaseSchema = z.object({
+  purchase_date: z.string().nonempty("Purchase date is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+  purchased_quantity: z.number().positive("Purchased quantity must be a positive number"),
+  product_id: z.number().positive("Product ID must be a positive integer"),
+});
+
 // Create a purchase
 exports.createPurchase = async (req, res) => {
+  // Validate the request body
+  const validation = purchaseSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ errors: validation.error.errors });
+  }
+
   const { purchase_date, purchased_quantity, product_id } = req.body;
   try {
     const product = await Product.findByPk(product_id);
@@ -50,6 +63,13 @@ exports.getPurchaseById = async (req, res) => {
 // Update a purchase
 exports.updatePurchase = async (req, res) => {
   const { id } = req.params;
+  
+  // Validate the request body
+  const validation = purchaseSchema.partial().safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ errors: validation.error.errors });
+  }
+
   const { purchase_date, purchased_quantity } = req.body;
   try {
     const purchase = await Purchase.findByPk(id);
@@ -57,8 +77,8 @@ exports.updatePurchase = async (req, res) => {
       return res.status(404).json({ message: 'Purchase not found' });
     }
 
-    purchase.purchase_date = purchase_date;
-    purchase.purchased_quantity = purchased_quantity;
+    purchase.purchase_date = purchase_date || purchase.purchase_date;
+    purchase.purchased_quantity = purchased_quantity || purchase.purchased_quantity;
     await purchase.save();
 
     res.status(200).json(purchase);
