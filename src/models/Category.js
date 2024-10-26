@@ -7,9 +7,15 @@ const Category = sequelize.define('Category', {
     primaryKey: true,
     autoIncrement: true,
   },
-  category_name: {
+    category_name: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
+    validate: {
+      notEmpty: {
+        msg: 'Category name is required'
+      }
+    }
   },
 }, { tableName: 'categories' });
 

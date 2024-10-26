@@ -15,7 +15,7 @@ RUN npm install -g nodemon
 COPY . .
 
 # Expose the port your app will use
-EXPOSE 3000
+EXPOSE 8080
 
 # Default command to run with nodemon
 CMD ["nodemon", "index.js"]

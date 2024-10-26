@@ -11,10 +11,19 @@ exports.createCategory = async (req, res, next) => {
   try {
     const validatedData = categorySchema.parse(req.body);
     const newCategory = await Category.create(validatedData);
-    res.status(201).json(newCategory);
+    if (process.env.NODE_ENV === 'production') {
+      const { createdAt, updatedAt, ...categoryWithoutTimestamps } = newCategory.toJSON();
+      return res.status(201).json(categoryWithoutTimestamps);
+    }else{
+      return res.status(201).json(newCategory);
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);  // Pass the error to the global error handler
   }
@@ -40,7 +49,13 @@ exports.getCategoryById = async (req, res, next) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    res.status(200).json(category);
+    if (process.env.NODE_ENV === 'production') {
+      // In production, remove createdAt and updatedAt
+      const { createdAt, updatedAt, ...categoryData } = category.get();
+      return res.status(200).json(categoryData);
+    } else {
+      return res.status(200).json(category);
+    }
   } catch (error) {
     next(error);
   }
