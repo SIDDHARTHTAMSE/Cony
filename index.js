@@ -6,6 +6,8 @@ const categoryRoutes = require('./src/routes/categoryRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
 const finishedProductRoutes = require('./src/routes/finishedProductRoutes');
+const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
+const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use('/api/v1', categoryRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', purchaseRoutes);
 app.use('/api/v1', finishedProductRoutes);
+app.use('/api/v1', purchasedStoreRoutes)
+app.use('/api/v1', finishedStoreRoutes)
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
