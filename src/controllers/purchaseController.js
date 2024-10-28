@@ -1,5 +1,5 @@
 const { z } = require('zod'); // Import Zod for validation
-const Purchase = require('../models/Purchase');
+const Purchase = require('../models/purchase');
 const Product = require('../models/Product');
 
 // Define Zod schema for purchase data validation
