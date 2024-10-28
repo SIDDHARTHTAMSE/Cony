@@ -6,7 +6,6 @@ const finishedProductSchema = z.object({
   product_id: z.number().min(1, "Product ID is required"),
   manufactured_date: z.string().nonempty("Manufactured date is required"),
   manufactured_quantity: z.number().min(1, "Manufactured quantity must be greater than 0"),
-  available_quantity: z.number().min(0, "Available quantity must be greater than or equal to 0"),
 });
 
 //Create a new Finished Product
@@ -17,7 +16,11 @@ exports.createFinishedProduct = async (req, res, next) => {
     res.status(201).json(newFinishedProduct);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);
   }
@@ -65,7 +68,11 @@ exports.updateFinishedProduct = async (req, res, next) => {
     res.status(200).json(updatedFinishedProduct);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);
   }
