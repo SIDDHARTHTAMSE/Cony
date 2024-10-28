@@ -76,8 +76,12 @@ exports.updateCategory = async (req, res, next) => {
     const updatedCategory = await Category.findByPk(id);
     res.status(200).json(updatedCategory);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+   if (error instanceof z.ZodError) {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);
   }
