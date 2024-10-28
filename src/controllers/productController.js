@@ -15,7 +15,11 @@ exports.createProduct = async (req, res, next) => {
     res.status(201).json(newProduct);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);
   }
@@ -63,7 +67,11 @@ exports.updateProduct = async (req, res, next) => {
     res.status(200).json(updatedProduct);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      }else{
+        return res.status(400).json({ errors: error.errors });
+      }
     }
     next(error);
   }
