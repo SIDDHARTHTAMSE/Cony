@@ -8,8 +8,7 @@ const purchaseRoutes = require('./src/routes/purchaseRoutes');
 const finishedProductRoutes = require('./src/routes/finishedProductRoutes');
 const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
 const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
-const rawMaterialRoutes = require('./src/routes/rawMaterialRoutes')
-const finishedGoodRoutes = require('./src/routes/finishedGoodRoutes')
+const inventoryRoutes = require('./src/routes/inventoryRoutes')
 
 const app = express();
 
@@ -24,8 +23,7 @@ app.use('/api/v1', purchaseRoutes);
 app.use('/api/v1', finishedProductRoutes);
 app.use('/api/v1', purchasedStoreRoutes)
 app.use('/api/v1', finishedStoreRoutes)
-app.use('/api/v1', rawMaterialRoutes)
-app.use('/api/v1', finishedGoodRoutes)
+app.use('/api/v1/inventory-management', inventoryRoutes);
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
