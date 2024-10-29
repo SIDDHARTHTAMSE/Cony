@@ -4,10 +4,10 @@ const {createPurchaseStore, getAllPurchaseStores, getPurchaseStoreById, updatePu
 
 const router = express.Router();
 
-router.post('/purchase_store',createPurchaseStore);
-router.get('/purchase_store', getAllPurchaseStores);
-router.get('/purchase_store/:id', getPurchaseStoreById);
-router.put('/purchase_store/:id', updatePurchaseStore);
-router.delete('/purchase_store/:id', deletePurchaseStore);
+router.post('/',createPurchaseStore);
+router.get('/', getAllPurchaseStores);
+router.get('/:id', getPurchaseStoreById);
+router.put('/:id', updatePurchaseStore);
+router.delete('/:id', deletePurchaseStore);
 
 module.exports = router;

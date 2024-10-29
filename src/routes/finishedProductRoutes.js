@@ -3,10 +3,10 @@ const { createFinishedProduct, getAllFinishedProducts, getFinishedProductById, u
 
 const router = express.Router();
 
-router.post('/finished-products', createFinishedProduct);
-router.get('/finished-products', getAllFinishedProducts);
-router.get('/finished-products/:id', getFinishedProductById);
-router.put('/finished-products/:id', updateFinishedProduct);
-router.delete('/finished-products/:id', deleteFinishedProduct);
+router.post('/', createFinishedProduct);
+router.get('/', getAllFinishedProducts);
+router.get('/:id', getFinishedProductById);
+router.put('/:id', updateFinishedProduct);
+router.delete('/:id', deleteFinishedProduct);
 
 module.exports = router;

@@ -17,12 +17,12 @@ app.use(express.json());
 app.use(cors()); // Apply CORS globally
 
 // Define routes
-app.use('/api/v1', categoryRoutes);
-app.use('/api/v1', productRoutes);
-app.use('/api/v1', purchaseRoutes);
-app.use('/api/v1', finishedProductRoutes);
-app.use('/api/v1', purchasedStoreRoutes)
-app.use('/api/v1', finishedStoreRoutes)
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/purchases', purchaseRoutes);
+app.use('/api/v1/finished-products', finishedProductRoutes);
+app.use('/api/v1/purchase-store', purchasedStoreRoutes)
+app.use('/api/v1/finished-stores', finishedStoreRoutes)
 app.use('/api/v1/inventory-management', inventoryRoutes);
 
 // Global error handling middleware
