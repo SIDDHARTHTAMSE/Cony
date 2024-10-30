@@ -9,6 +9,11 @@ const finishedProductRoutes = require('./src/routes/finishedProductRoutes');
 const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
 const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
 const inventoryRoutes = require('./src/routes/inventoryRoutes')
+const Product = require('./src/models/Product')
+const Category = require('./src/models/Category')
+const FinishedProduct = require('./src/models/FinishedProduct')
+const PurchaseStore = require('./src/models/purchasedStore')
+const FinishedStore = require('./src/models/finishedStore')
 
 const app = express();
 
@@ -24,6 +29,16 @@ app.use('/api/v1/finished-products', finishedProductRoutes);
 app.use('/api/v1/purchase-store', purchasedStoreRoutes)
 app.use('/api/v1/finished-stores', finishedStoreRoutes)
 app.use('/api/v1/inventory-management', inventoryRoutes);
+
+// Register associations
+Product.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Product, { foreignKey: 'category_id' });
+
+FinishedProduct.belongsTo(Product, { foreignKey: 'product_id' });
+Product.hasMany(FinishedProduct, { foreignKey: 'product_id' });
+
+FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
+FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
@@ -67,3 +82,12 @@ app.listen(PORT, async () => {
   console.log(`Server running on PORT: ${PORT}`);
   await connectToDatabase(); // Connect to the database
 });
+
+// Export all models for use in other parts of your application
+module.exports = {
+  Product,
+  Category,
+  PurchaseStore,
+  FinishedProduct,
+  FinishedStore,
+};
