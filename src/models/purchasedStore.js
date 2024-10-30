@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db'); 
 const Purchase = require('./purchase'); 
+const FinishedProduct = require('../models/FinishedProduct')
+const FinishedStore = require('../models/finishedStore')
 
 const PurchaseStore = sequelize.define(
   'PurchaseStore',
@@ -28,5 +30,11 @@ const PurchaseStore = sequelize.define(
     tableName: 'purchase_store'
   }
 );
+
+// Define associations **after** the model definitions
+FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
+FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
+PurchaseStore.belongsTo(FinishedStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
+FinishedStore.hasMany(PurchaseStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
 
 module.exports = PurchaseStore;
