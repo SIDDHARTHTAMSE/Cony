@@ -1,8 +1,9 @@
 const PurchaseStore = require('../models/purchasedStore');
+const Product = require('../models/Product');
 const { z } = require('zod');
 
 const purchaseStoreSchema = z.object({
-  purchase_id: z.number().min(1, "Purchase ID is required"),
+  product_id: z.number().min(1, "Product ID is required"),
   available_quantity: z.number().min(1, "Available quantity must be a non-negative integer"),
 });
 
