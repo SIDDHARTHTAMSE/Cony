@@ -1,28 +1,58 @@
-const FinishedProduct = require('../models/FinishedProduct');
 const { z } = require('zod');
+const FinishedProduct = require('../models/FinishedProduct');
+const Product = require('../models/Product');
+const FinishedStore = require('../models/finishedStore')
 
-// Zod schema for finished product validation
+// Define Zod schema for finished product validation
 const finishedProductSchema = z.object({
-  product_id: z.number().min(1, "Product ID is required"),
-  manufactured_date: z.string().nonempty("Manufactured date is required"),
-  manufactured_quantity: z.number().min(1, "Manufactured quantity must be greater than 0"),
+  product_id: z.number().positive("Product ID must be a positive integer"),
+  manufactured_date: z.string().nonempty("Manufactured date is required")
+                      .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+  manufactured_quantity: z.number().positive("Manufactured quantity must be greater than 0"),
 });
 
-//Create a new Finished Product
+// Create a new Finished Product
 exports.createFinishedProduct = async (req, res, next) => {
+  const validation = finishedProductSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({ errors: validation.error.errors });
+  }
+
+  const { product_id, manufactured_date, manufactured_quantity } = req.body;
+
   try {
-    const validatedData = finishedProductSchema.parse(req.body);
-    const newFinishedProduct = await FinishedProduct.create(validatedData);
-    res.status(201).json(newFinishedProduct);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      if (process.env.NODE_ENV === 'production') {
-        return res.status(400).json({ message: error.errors[0].message });
-      }else{
-        return res.status(400).json({ errors: error.errors });
-      }
+    // Check if product exists
+    const product = await Product.findByPk(product_id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
     }
-    next(error);
+
+    // Check if entry exists in FinishedStore
+    const finishedStoreEntry = await FinishedStore.findOne({ where: { product_id } });
+
+    if (finishedStoreEntry) {
+      // Update existing available quantity
+      finishedStoreEntry.available_quantity += manufactured_quantity;
+      await finishedStoreEntry.save();
+    } else {
+      // Create a new FinishedStore entry
+      await FinishedStore.create({ product_id, available_quantity: manufactured_quantity });
+    }
+
+    // Create FinishedProduct record
+    const newFinishedProduct = await FinishedProduct.create({
+      product_id,
+      manufactured_date,
+      manufactured_quantity,
+    });
+
+    res.status(201).json(newFinishedProduct);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error while creating finished product or updating inventory",
+      error: error.message
+    });
   }
 };
 
