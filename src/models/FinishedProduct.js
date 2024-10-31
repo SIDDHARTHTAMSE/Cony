@@ -25,8 +25,8 @@ const FinishedProduct = sequelize.define('FinishedProduct', {
   },
 }, { tableName: 'finished_products' });
 
-// Associations
-FinishedProduct.belongsTo(Product, { foreignKey: 'product_id' });
-Product.hasMany(FinishedProduct, { foreignKey: 'product_id' });
+// // Associations
+// FinishedProduct.belongsTo(Product, { foreignKey: 'product_id' });
+// Product.hasMany(FinishedProduct, { foreignKey: 'product_id' });
 
 module.exports = FinishedProduct;
