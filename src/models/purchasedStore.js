@@ -1,8 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db'); 
-const Purchase = require('./purchase'); 
-const FinishedProduct = require('../models/FinishedProduct')
-const FinishedStore = require('../models/finishedStore')
+const Product = require('./Product');
 
 const PurchaseStore = sequelize.define(
   'PurchaseStore',
@@ -13,12 +11,12 @@ const PurchaseStore = sequelize.define(
       autoIncrement: true, 
       allowNull: false, 
     },
-    purchase_id: {
+    product_id: {
       type: DataTypes.INTEGER,
-      allowNull: false, 
+      allowNull: false,
       references: {
-        model: Purchase,
-        key: 'purchase_id',
+        model: Product,
+        key: 'product_id',
       },
     },
     available_quantity: {
@@ -31,10 +29,10 @@ const PurchaseStore = sequelize.define(
   }
 );
 
-// Define associations **after** the model definitions
-FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
-FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
-PurchaseStore.belongsTo(FinishedStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
-FinishedStore.hasMany(PurchaseStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
+// // Define associations **after** the model definitions
+// FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
+// FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
+// PurchaseStore.belongsTo(FinishedStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
+// FinishedStore.hasMany(PurchaseStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
 
 module.exports = PurchaseStore;
