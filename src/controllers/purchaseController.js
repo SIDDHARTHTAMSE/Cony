@@ -1,6 +1,7 @@
 const { z } = require('zod'); // Import Zod for validation
 const Purchase = require('../models/purchase');
 const Product = require('../models/Product');
+const PurchaseStore = require('../models/purchasedStore')
 
 // Define Zod schema for purchase data validation
 const purchaseSchema = z.object({
@@ -9,30 +10,39 @@ const purchaseSchema = z.object({
   product_id: z.number().positive("Product ID must be a positive integer"),
 });
 
-// Create a purchase
 exports.createPurchase = async (req, res) => {
-  // Validate the request body
   const validation = purchaseSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
   const { purchase_date, purchased_quantity, product_id } = req.body;
+
   try {
     const product = await Product.findByPk(product_id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const newPurchase = await Purchase.create({
-      purchase_date,
-      purchased_quantity,
-      product_id,
-    });
+    const purchaseStoreEntry = await PurchaseStore.findOne({ where: { product_id } });
+    
+    if (purchaseStoreEntry) {
+      // Update existing available quantity
+      purchaseStoreEntry.available_quantity += purchased_quantity;
+      await purchaseStoreEntry.save();
+    } else {
+      // Create a new PurchaseStore entry
+      await PurchaseStore.create({ product_id, available_quantity: purchased_quantity });
+    }
 
+    const newPurchase = await Purchase.create({ purchase_date, purchased_quantity, product_id });
     res.status(201).json(newPurchase);
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Internal Server Error while creating purchase or updating inventory",
+      error: error.message
+    });
   }
 };
 
