@@ -1,28 +1,30 @@
 const FinishedStore = require('../models/finishedStore');
+const Product = require('../models/Product');
 const { z } = require('zod');
 
+// Schema validation for FinishedStore
 const finishedStoreSchema = z.object({
-  finished_product_id: z.number().min(1, "Finishe ID is required"),
-  available_quantity: z.number().min(1, "Available quantity must be a non-negative integer"),
+  product_id: z.number().min(1, "Product ID is required"),
+  available_quantity: z.number().min(0, "Available quantity must be a non-negative integer"),
 });
 
 // Create a new FinishedStore
 exports.createFinishedStore = async (req, res, next) => {
-    try {
-      const validatedData = finishedStoreSchema.parse(req.body);
-      const newFinishedStore = await FinishedStore.create(validatedData);
-      res.status(201).json(newFinishedStore);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        if (process.env.NODE_ENV === 'production') {
-          return res.status(400).json({ message: error.errors[0].message });
-        }else{
-          return res.status(400).json({ errors: error.errors });
-        }
+  try {
+    const validatedData = finishedStoreSchema.parse(req.body);
+    const newFinishedStore = await FinishedStore.create(validatedData);
+    res.status(201).json(newFinishedStore);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(400).json({ message: error.errors[0].message });
+      } else {
+        return res.status(400).json({ errors: error.errors });
       }
-      next(error);
     }
-  };
+    next(error);
+  }
+};
 
 // Get all FinishedStores
 exports.getAllFinishedStores = async (req, res, next) => {
@@ -34,7 +36,7 @@ exports.getAllFinishedStores = async (req, res, next) => {
   }
 };
 
-// Get a PurchaseStore by ID
+// Get a FinishedStore by ID
 exports.getFinishedStoreById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -55,9 +57,9 @@ exports.updateFinishedStore = async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = finishedStoreSchema.parse(req.body);
-    
+
     const [updated] = await FinishedStore.update(validatedData, { where: { finished_store_id: id } });
-    
+
     if (!updated) {
       return res.status(404).json({ message: "FinishedStore not found or nothing to update" });
     }
@@ -68,7 +70,7 @@ exports.updateFinishedStore = async (req, res, next) => {
     if (error instanceof z.ZodError) {
       if (process.env.NODE_ENV === 'production') {
         return res.status(400).json({ message: error.errors[0].message });
-      }else{
+      } else {
         return res.status(400).json({ errors: error.errors });
       }
     }
