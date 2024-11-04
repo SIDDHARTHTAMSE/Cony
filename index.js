@@ -15,11 +15,17 @@ const FinishedProduct = require('./src/models/FinishedProduct')
 const PurchaseStore = require('./src/models/purchasedStore')
 const FinishedStore = require('./src/models/finishedStore')
 
+// Import Swagger setup
+const { swaggerUi, swaggerDocs } = require('./src/config/swagger');
+
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors()); // Apply CORS globally
+
+// Serve Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Define routes
 app.use('/api/v1/categories', categoryRoutes);
@@ -55,7 +61,7 @@ app.use((err, req, res, next) => {
  * Connect to the database and sync models.
  * If the first attempt fails, retry after a delay.
  */
-const connectToDatabase = async (retries = 2, delay = 3000) => {
+const connectToDatabase = async (retries = 2, delay = 8080) => {
   try {
     console.log('Attempting to connect to the database...');
     
@@ -77,7 +83,7 @@ const connectToDatabase = async (retries = 2, delay = 3000) => {
 };
 
 // Start the server and connect to the database
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, async () => {
   console.log(`Server running on PORT: ${PORT}`);
   await connectToDatabase(); // Connect to the database
