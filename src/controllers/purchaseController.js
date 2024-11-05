@@ -1,7 +1,7 @@
 const { z } = require('zod'); // Import Zod for validation
 const Purchase = require('../models/purchase');
 const Product = require('../models/Product');
-const PurchaseStore = require('../models/purchasedStore')
+const PurchaseStore = require('../models/purchasedStore');
 
 // Define Zod schema for purchase data validation
 const purchaseSchema = z.object({
@@ -10,7 +10,8 @@ const purchaseSchema = z.object({
   product_id: z.number().positive("Product ID must be a positive integer"),
 });
 
-exports.createPurchase = async (req, res) => {
+// Create a new Purchase
+exports.createPurchase = async (req, res, next) => {
   const validation = purchaseSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -19,62 +20,59 @@ exports.createPurchase = async (req, res) => {
   const { purchase_date, purchased_quantity, product_id } = req.body;
 
   try {
+    // Check if product exists
     const product = await Product.findByPk(product_id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Find or update PurchaseStore entry
     const purchaseStoreEntry = await PurchaseStore.findOne({ where: { product_id } });
-    
     if (purchaseStoreEntry) {
-      // Update existing available quantity
       purchaseStoreEntry.available_quantity += purchased_quantity;
       await purchaseStoreEntry.save();
     } else {
-      // Create a new PurchaseStore entry
       await PurchaseStore.create({ product_id, available_quantity: purchased_quantity });
     }
 
+    // Create a new purchase record
     const newPurchase = await Purchase.create({ purchase_date, purchased_quantity, product_id });
     res.status(201).json(newPurchase);
 
   } catch (error) {
-    res.status(500).json({
-      message: "Internal Server Error while creating purchase or updating inventory",
-      error: error.message
-    });
+    next(error);
   }
 };
 
 // Get all purchases
-exports.getPurchases = async (req, res) => {
+exports.getPurchases = async (req, res, next) => {
   try {
-    const purchases = await Purchase.findAll({ include: Product });
+    const purchases = await Purchase.findAll();
     res.status(200).json(purchases);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-// Get a single purchase
-exports.getPurchaseById = async (req, res) => {
+// Get a single purchase by ID
+exports.getPurchaseById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const purchase = await Purchase.findByPk(id, { include: Product });
+    const purchase = await Purchase.findByPk(id);
     if (!purchase) {
       return res.status(404).json({ message: 'Purchase not found' });
     }
     res.status(200).json(purchase);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-// Update a purchase
-exports.updatePurchase = async (req, res) => {
+// Update a purchase by ID
+exports.updatePurchase = async (req, res, next) => {
   const { id } = req.params;
   
-  // Validate the request body
+  // Validate request body with partial schema
   const validation = purchaseSchema.partial().safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -87,18 +85,19 @@ exports.updatePurchase = async (req, res) => {
       return res.status(404).json({ message: 'Purchase not found' });
     }
 
+    // Update fields if provided
     purchase.purchase_date = purchase_date || purchase.purchase_date;
     purchase.purchased_quantity = purchased_quantity || purchase.purchased_quantity;
     await purchase.save();
 
     res.status(200).json(purchase);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-// Delete a purchase
-exports.deletePurchase = async (req, res) => {
+// Delete a purchase by ID
+exports.deletePurchase = async (req, res, next) => {
   const { id } = req.params;
   try {
     const purchase = await Purchase.findByPk(id);
@@ -109,6 +108,6 @@ exports.deletePurchase = async (req, res) => {
     await purchase.destroy();
     res.status(200).json({ message: 'Purchase deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
