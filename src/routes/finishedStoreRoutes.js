@@ -1,3 +1,4 @@
+// routes/finishedStoreRoutes.js
 const express = require('express');
 const {
   createFinishedStore,
@@ -5,7 +6,7 @@ const {
   getFinishedStoreById,
   updateFinishedStore,
   deleteFinishedStore,
-} = require('../controllers/finishedStoreController'); // Adjust the path as necessary
+} = require('../controllers/finishedStoreController');
 
 const router = express.Router();
 
@@ -29,15 +30,26 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *                 example: Warehouse A
- *               location:
- *                 type: string
- *                 example: Downtown
+ *               product_id:
+ *                 type: integer
+ *                 example: 1
+ *                 description: ID of the product
+ *               available_quantity:
+ *                 type: integer
+ *                 example: 50
+ *                 description: Available quantity of the finished product
  *     responses:
  *       201:
  *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 product_id:
+ *                   type: integer
+ *                 available_quantity:
+ *                   type: integer
  *       400:
  *         description: Bad Request
  */
@@ -59,15 +71,15 @@ router.post('/', createFinishedStore);
  *               items:
  *                 type: object
  *                 properties:
- *                   id:
- *                     type: string
- *                     example: "123"
- *                   name:
- *                     type: string
- *                     example: Warehouse A
- *                   location:
- *                     type: string
- *                     example: Downtown
+ *                   finished_store_id:
+ *                     type: integer
+ *                     example: 1
+ *                   product_id:
+ *                     type: integer
+ *                     example: 1
+ *                   available_quantity:
+ *                     type: integer
+ *                     example: 100
  */
 router.get('/', getAllFinishedStores);
 
@@ -83,10 +95,24 @@ router.get('/', getAllFinishedStores);
  *         required: true
  *         description: The ID of the finished store
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
  *         description: The requested finished store
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 finished_store_id:
+ *                   type: integer
+ *                   example: 1
+ *                 product_id:
+ *                   type: integer
+ *                   example: 1
+ *                 available_quantity:
+ *                   type: integer
+ *                   example: 100
  *       404:
  *         description: Not Found
  */
@@ -104,7 +130,7 @@ router.get('/:id', getFinishedStoreById);
  *         required: true
  *         description: The ID of the finished store to update
  *         schema:
- *           type: string
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -112,15 +138,29 @@ router.get('/:id', getFinishedStoreById);
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *                 example: Updated Warehouse A
- *               location:
- *                 type: string
- *                 example: New Location
+ *               product_id:
+ *                 type: integer
+ *                 example: 1
+ *               available_quantity:
+ *                 type: integer
+ *                 example: 200
  *     responses:
  *       200:
  *         description: Updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 finished_store_id:
+ *                   type: integer
+ *                   example: 1
+ *                 product_id:
+ *                   type: integer
+ *                   example: 1
+ *                 available_quantity:
+ *                   type: integer
+ *                   example: 200
  *       404:
  *         description: Not Found
  */
@@ -138,10 +178,18 @@ router.put('/:id', updateFinishedStore);
  *         required: true
  *         description: The ID of the finished store to delete
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
- *       204:
- *         description: No Content
+ *       200:
+ *         description: Deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "FinishedStore deleted successfully"
  *       404:
  *         description: Not Found
  */
