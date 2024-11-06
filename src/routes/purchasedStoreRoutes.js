@@ -1,6 +1,12 @@
-// routes/purchaseRoutes.js
+// routes/purchaseStoreRoutes.js
 const express = require('express');
-const { createPurchaseStore, getAllPurchaseStores, getPurchaseStoreById, updatePurchaseStore, deletePurchaseStore } = require('../controllers/purchasedStoreController');
+const {
+  createPurchaseStore,
+  getAllPurchaseStores,
+  getPurchaseStoreById,
+  updatePurchaseStoreById,
+  deletePurchaseStoreById
+} = require('../controllers/purchasedStoreController');
 
 const router = express.Router();
 
@@ -34,7 +40,21 @@ const router = express.Router();
  *                 example: 100
  *     responses:
  *       201:
- *         description: Created
+ *         description: Purchase store entry created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_store_id:
+ *                   type: integer
+ *                   example: 1
+ *                 product_id:
+ *                   type: integer
+ *                   example: 1
+ *                 available_quantity:
+ *                   type: integer
+ *                   example: 100
  *       400:
  *         description: Bad Request
  */
@@ -70,13 +90,13 @@ router.get('/', getAllPurchaseStores);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{id}:
+ * /api/v1/purchaseStores/{purchase_store_id}:
  *   get:
  *     summary: Get a purchase store entry by ID
  *     tags: [PurchaseStores]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: purchase_store_id
  *         required: true
  *         description: The ID of the purchase store entry
  *         schema:
@@ -84,20 +104,34 @@ router.get('/', getAllPurchaseStores);
  *     responses:
  *       200:
  *         description: The requested purchase store entry
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_store_id:
+ *                   type: integer
+ *                   example: 1
+ *                 product_id:
+ *                   type: integer
+ *                   example: 1
+ *                 available_quantity:
+ *                   type: integer
+ *                   example: 100
  *       404:
  *         description: PurchaseStore not found
  */
-router.get('/:id', getPurchaseStoreById);
+router.get('/:purchase_store_id', getPurchaseStoreById);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{id}:
+ * /api/v1/purchaseStores/{purchase_store_id}:
  *   put:
  *     summary: Update a purchase store entry by ID
  *     tags: [PurchaseStores]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: purchase_store_id
  *         required: true
  *         description: The ID of the purchase store entry to update
  *         schema:
@@ -117,21 +151,35 @@ router.get('/:id', getPurchaseStoreById);
  *                 example: 50
  *     responses:
  *       200:
- *         description: Updated
+ *         description: Purchase store entry updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_store_id:
+ *                   type: integer
+ *                   example: 1
+ *                 product_id:
+ *                   type: integer
+ *                   example: 2
+ *                 available_quantity:
+ *                   type: integer
+ *                   example: 50
  *       404:
  *         description: PurchaseStore not found
  */
-router.put('/:id', updatePurchaseStore);
+router.put('/:purchase_store_id', updatePurchaseStoreById);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{id}:
+ * /api/v1/purchaseStores/{purchase_store_id}:
  *   delete:
  *     summary: Delete a purchase store entry by ID
  *     tags: [PurchaseStores]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: purchase_store_id
  *         required: true
  *         description: The ID of the purchase store entry to delete
  *         schema:
@@ -142,6 +190,6 @@ router.put('/:id', updatePurchaseStore);
  *       404:
  *         description: PurchaseStore not found
  */
-router.delete('/:id', deletePurchaseStore);
+router.delete('/:purchase_store_id', deletePurchaseStoreById);
 
 module.exports = router;
