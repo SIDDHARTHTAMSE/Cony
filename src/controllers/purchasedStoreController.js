@@ -44,13 +44,16 @@ exports.getAllPurchaseStores = async (req, res, next) => {
   }
 };
 
-// Get a PurchaseStore by ID
+
 exports.getPurchaseStoreById = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    
-    // Fetch PurchaseStore along with its associated Product data
-    const purchaseStore = await PurchaseStore.findByPk();
+    const { purchase_store_id } = req.params; // Use the correct param name
+
+    if (!purchase_store_id) {
+      return res.status(400).json({ message: "purchase_store_id parameter is missing" });
+    }
+
+    const purchaseStore = await PurchaseStore.findByPk(purchase_store_id);
 
     if (!purchaseStore) {
       return res.status(404).json({ message: "PurchaseStore not found" });
@@ -58,27 +61,25 @@ exports.getPurchaseStoreById = async (req, res, next) => {
 
     res.status(200).json(purchaseStore);
   } catch (error) {
+    console.error("Error fetching PurchaseStore by ID:", error);
     next(error);
   }
 };
 
-// Update a PurchaseStore by ID
-exports.updatePurchaseStore = async (req, res, next) => {
+// Update PurchaseStore by ID
+exports.updatePurchaseStoreById = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { purchase_store_id } = req.params; // Correct the param name if necessary
     const validatedData = purchaseStoreSchema.parse(req.body);
 
-    // Check if the PurchaseStore exists
-    const purchaseStore = await PurchaseStore.findByPk(id);
+    const purchaseStore = await PurchaseStore.findByPk(purchase_store_id);
     if (!purchaseStore) {
       return res.status(404).json({ message: "PurchaseStore not found" });
     }
 
-    // Update the PurchaseStore entry
-    await PurchaseStore.update(validatedData, { where: { id } });
-    const updatedPurchaseStore = await PurchaseStore.findByPk(id, {
-      include: Product,
-    });
+    // Update the record, referencing the correct column name
+    await PurchaseStore.update(validatedData, { where: { purchase_store_id } });
+    const updatedPurchaseStore = await PurchaseStore.findByPk(purchase_store_id);
     res.status(200).json(updatedPurchaseStore);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -90,13 +91,11 @@ exports.updatePurchaseStore = async (req, res, next) => {
   }
 };
 
-// Delete a PurchaseStore by ID
-exports.deletePurchaseStore = async (req, res, next) => {
+// Delete PurchaseStore by ID
+exports.deletePurchaseStoreById = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    // Attempt to delete the PurchaseStore
-    const deleted = await PurchaseStore.destroy({ where: { id } });
+    const { purchase_store_id } = req.params; // Correct the param name if necessary
+    const deleted = await PurchaseStore.destroy({ where: { purchase_store_id } });
 
     if (!deleted) {
       return res.status(404).json({ message: "PurchaseStore not found" });
