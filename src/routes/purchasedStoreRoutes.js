@@ -19,7 +19,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/purchaseStores:
+ * /api/v1/purchase-store:
  *   post:
  *     summary: Create a new purchase store entry
  *     tags: [PurchaseStores]
@@ -62,7 +62,7 @@ router.post('/', createPurchaseStore);
 
 /**
  * @swagger
- * /api/v1/purchaseStores:
+ * /api/v1/purchase-store:
  *   get:
  *     summary: Get all purchase store entries
  *     tags: [PurchaseStores]
@@ -90,7 +90,7 @@ router.get('/', getAllPurchaseStores);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{purchase_store_id}:
+ * /api/v1/purchase-store/{purchase_store_id}:
  *   get:
  *     summary: Get a purchase store entry by ID
  *     tags: [PurchaseStores]
@@ -125,7 +125,7 @@ router.get('/:purchase_store_id', getPurchaseStoreById);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{purchase_store_id}:
+ * /api/v1/purchase-store/{purchase_store_id}:
  *   put:
  *     summary: Update a purchase store entry by ID
  *     tags: [PurchaseStores]
@@ -173,7 +173,7 @@ router.put('/:purchase_store_id', updatePurchaseStoreById);
 
 /**
  * @swagger
- * /api/v1/purchaseStores/{purchase_store_id}:
+ * /api/v1/purchase-store/{purchase_store_id}:
  *   delete:
  *     summary: Delete a purchase store entry by ID
  *     tags: [PurchaseStores]
