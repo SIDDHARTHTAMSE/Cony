@@ -19,7 +19,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/finished-stores:
+ * /api/v1/finished-stores: 
  *   post:
  *     summary: Create a new finished store entry
  *     tags: [Finished Stores]
