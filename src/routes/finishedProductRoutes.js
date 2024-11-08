@@ -13,7 +13,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/finishedProducts:
+ * /api/v1/finished-products:
  *   post:
  *     summary: Create a new finished product entry
  *     tags: [FinishedProducts]
@@ -46,7 +46,7 @@ router.post('/', createFinishedProduct);
 
 /**
  * @swagger
- * /api/v1/finishedProducts:
+ * /api/v1/finished-products:
  *   get:
  *     summary: Get all finished product entries
  *     tags: [FinishedProducts]
@@ -77,7 +77,7 @@ router.get('/', getAllFinishedProducts);
 
 /**
  * @swagger
- * /api/v1/finishedProducts/{id}:
+ * /api/v1/finished-products/{id}:
  *   get:
  *     summary: Get a finished product entry by ID
  *     tags: [FinishedProducts]
@@ -98,7 +98,7 @@ router.get('/:id', getFinishedProductById);
 
 /**
  * @swagger
- * /api/v1/finishedProducts/{id}:
+ * /api/v1/finished-products/{id}:
  *   put:
  *     summary: Update a finished product entry by ID
  *     tags: [FinishedProducts]
@@ -135,7 +135,7 @@ router.put('/:id', updateFinishedProduct);
 
 /**
  * @swagger
- * /api/v1/finishedProducts/{id}:
+ * /api/v1/finished-products/{id}:
  *   delete:
  *     summary: Delete a finished product entry by ID
  *     tags: [FinishedProducts]
