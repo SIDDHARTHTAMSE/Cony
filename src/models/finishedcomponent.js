@@ -2,8 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const Component = require('../models/component');
 
-const Purchase = sequelize.define('Purchase', {
-  purchase_id: {
+const FinishedComponent = sequelize.define('FinishedComponent', {
+  finished_component_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -15,14 +15,18 @@ const Purchase = sequelize.define('Purchase', {
       key: 'component_id',
     },
   },
-  purchase_date: {
+  manufactured_date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  purchased_quantity: {
+  manufactured_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-}, { tableName: 'purchases' });
+}, { tableName: 'finished_components' });
 
-module.exports = Purchase;
+// // Associations
+// FinishedComponent.belongsTo(Component, { foreignKey: 'component_id' });
+// Component.hasMany(FinishedComponent, { foreignKey: 'component_id' });
+
+module.exports = FinishedComponent;

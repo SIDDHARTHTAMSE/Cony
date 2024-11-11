@@ -1,22 +1,22 @@
-// routes/productRoutes.js
+// routes/ComponentRoutes.js
 const express = require('express');
-const { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct } = require('../controllers/productController');
+const { createComponent, getAllComponents, getComponentById, updateComponent, deleteComponent } = require('../controllers/componentController');
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Products
- *   description: API for managing products
+ *   name: Components
+ *   description: API for managing Components
  */
 
 /**
  * @swagger
- * /api/v1/products:
+ * /api/v1/Components:
  *   post:
- *     summary: Create a new product
- *     tags: [Products]
+ *     summary: Create a new Component
+ *     tags: [Components]
  *     requestBody:
  *       required: true
  *       content:
@@ -26,11 +26,11 @@ const router = express.Router();
  *             properties:
  *               category_id:
  *                 type: integer
- *                 description: The ID of the product category
+ *                 description: The ID of the Component category
  *                 example: 1
- *               product_name:
+ *               component_name:
  *                 type: string
- *                 description: Name of the product
+ *                 description: Name of the Component
  *                 example: "Smartphone"
  *     responses:
  *       201:
@@ -38,17 +38,17 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/', createProduct);
+router.post('/', createComponent);
 
 /**
  * @swagger
- * /api/v1/products:
+ * /api/v1/Components:
  *   get:
- *     summary: Get all products
- *     tags: [Products]
+ *     summary: Get all Components
+ *     tags: [Components]
  *     responses:
  *       200:
- *         description: A list of products
+ *         description: A list of Components
  *         content:
  *           application/json:
  *             schema:
@@ -56,50 +56,50 @@ router.post('/', createProduct);
  *               items:
  *                 type: object
  *                 properties:
- *                   product_id:
+ *                   component_id:
  *                     type: integer
  *                     example: 1
  *                   category_id:
  *                     type: integer
  *                     example: 1
- *                   product_name:
+ *                   component_name:
  *                     type: string
  *                     example: "Smartphone"
  */
-router.get('/', getAllProducts);
+router.get('/', getAllComponents);
 
 /**
  * @swagger
- * /api/v1/products/{id}:
+ * /api/v1/Components/{id}:
  *   get:
- *     summary: Get a product by ID
- *     tags: [Products]
+ *     summary: Get a Component by ID
+ *     tags: [Components]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the product
+ *         description: The ID of the Component
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: The requested product
+ *         description: The requested Component
  *       404:
- *         description: Product not found
+ *         description: Component not found
  */
-router.get('/:id', getProductById);
+router.get('/:id', getComponentById);
 
 /**
  * @swagger
- * /api/v1/products/{id}:
+ * /api/v1/Components/{id}:
  *   put:
- *     summary: Update a product by ID
- *     tags: [Products]
+ *     summary: Update a Component by ID
+ *     tags: [Components]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the product to update
+ *         description: The ID of the Component to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -112,36 +112,36 @@ router.get('/:id', getProductById);
  *               category_id:
  *                 type: integer
  *                 example: 2
- *               product_name:
+ *               component_name:
  *                 type: string
  *                 example: "Laptop"
  *     responses:
  *       200:
  *         description: Updated
  *       404:
- *         description: Product not found
+ *         description: Component not found
  */
-router.put('/:id', updateProduct);
+router.put('/:id', updateComponent);
 
 /**
  * @swagger
- * /api/v1/products/{id}:
+ * /api/v1/Components/{id}:
  *   delete:
- *     summary: Delete a product by ID
- *     tags: [Products]
+ *     summary: Delete a Component by ID
+ *     tags: [Components]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the product to delete
+ *         description: The ID of the Component to delete
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Product deleted successfully
+ *         description: Component deleted successfully
  *       404:
- *         description: Product not found
+ *         description: Component not found
  */
-router.delete('/:id', deleteProduct);
+router.delete('/:id', deleteComponent);
 
 module.exports = router;

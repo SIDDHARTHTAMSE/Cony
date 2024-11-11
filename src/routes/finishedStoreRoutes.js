@@ -30,14 +30,14 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               component_id:
  *                 type: integer
  *                 example: 1
- *                 description: ID of the product
+ *                 description: ID of the Component
  *               available_quantity:
  *                 type: integer
  *                 example: 50
- *                 description: Available quantity of the finished product
+ *                 description: Available quantity of the finished Component
  *     responses:
  *       201:
  *         description: Created
@@ -46,7 +46,7 @@ const router = express.Router();
  *             schema:
  *               type: object
  *               properties:
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                 available_quantity:
  *                   type: integer
@@ -74,7 +74,7 @@ router.post('/', createFinishedStore);
  *                   finished_store_id:
  *                     type: integer
  *                     example: 1
- *                   product_id:
+ *                   component_id:
  *                     type: integer
  *                     example: 1
  *                   available_quantity:
@@ -107,7 +107,7 @@ router.get('/', getAllFinishedStores);
  *                 finished_store_id:
  *                   type: integer
  *                   example: 1
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                   example: 1
  *                 available_quantity:
@@ -138,7 +138,7 @@ router.get('/:id', getFinishedStoreById);
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               component_id:
  *                 type: integer
  *                 example: 1
  *               available_quantity:
@@ -155,7 +155,7 @@ router.get('/:id', getFinishedStoreById);
  *                 finished_store_id:
  *                   type: integer
  *                   example: 1
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                   example: 1
  *                 available_quantity:

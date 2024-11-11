@@ -1,10 +1,10 @@
 const PurchaseStore = require('../models/purchasedStore');
-const Product = require('../models/Product');
+const Component = require('../models/component');
 const { z } = require('zod');
 
 // Validation schema for PurchaseStore data
 const purchaseStoreSchema = z.object({
-  product_id: z.number().min(1, "Product ID is required"),
+  component_id: z.number().min(1, "Component ID is required"),
   available_quantity: z.number().min(1, "Available quantity must be a non-negative integer"),
 });
 
@@ -14,10 +14,10 @@ exports.createPurchaseStore = async (req, res, next) => {
     // Validate request data
     const validatedData = purchaseStoreSchema.parse(req.body);
     
-    // Check if the Product exists before creating a PurchaseStore
-    const productExists = await Product.findByPk(validatedData.product_id);
-    if (!productExists) {
-      return res.status(400).json({ message: "Product does not exist" });
+    // Check if the Component exists before creating a PurchaseStore
+    const ComponentExists = await Component.findByPk(validatedData.component_id);
+    if (!ComponentExists) {
+      return res.status(400).json({ message: "Component does not exist" });
     }
 
     // Create the new PurchaseStore entry
@@ -27,7 +27,7 @@ exports.createPurchaseStore = async (req, res, next) => {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       return res.status(400).json({
-        message: process.env.NODE_ENV === 'production' ? error.errors[0].message : error.errors,
+        message: process.env.NODE_ENV === 'Production' ? error.errors[0].message : error.errors,
       });
     }
     next(error);
@@ -84,7 +84,7 @@ exports.updatePurchaseStoreById = async (req, res, next) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
-        message: process.env.NODE_ENV === 'production' ? error.errors[0].message : error.errors,
+        message: process.env.NODE_ENV === 'Production' ? error.errors[0].message : error.errors,
       });
     }
     next(error);

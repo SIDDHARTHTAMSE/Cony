@@ -1,13 +1,13 @@
 const { z } = require('zod'); // Import Zod for validation
 const Purchase = require('../models/purchase');
-const Product = require('../models/Product');
+const Component = require('../models/component');
 const PurchaseStore = require('../models/purchasedStore');
 
 // Define Zod schema for purchase data validation
 const purchaseSchema = z.object({
   purchase_date: z.string().nonempty("Purchase date is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
   purchased_quantity: z.number().positive("Purchased quantity must be a positive number"),
-  product_id: z.number().positive("Product ID must be a positive integer"),
+  component_id: z.number().positive("Component ID must be a positive integer"),
 });
 
 // Create a new Purchase
@@ -17,26 +17,26 @@ exports.createPurchase = async (req, res, next) => {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
-  const { purchase_date, purchased_quantity, product_id } = req.body;
+  const { purchase_date, purchased_quantity, component_id } = req.body;
 
   try {
-    // Check if product exists
-    const product = await Product.findByPk(product_id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+    // Check if Component exists
+    const Components = await Component.findByPk(component_id);
+    if (!Components) {
+      return res.status(404).json({ message: 'Component not found' });
     }
 
     // Find or update PurchaseStore entry
-    const purchaseStoreEntry = await PurchaseStore.findOne({ where: { product_id } });
+    const purchaseStoreEntry = await PurchaseStore.findOne({ where: { component_id } });
     if (purchaseStoreEntry) {
       purchaseStoreEntry.available_quantity += purchased_quantity;
       await purchaseStoreEntry.save();
     } else {
-      await PurchaseStore.create({ product_id, available_quantity: purchased_quantity });
+      await PurchaseStore.create({ component_id, available_quantity: purchased_quantity });
     }
 
     // Create a new purchase record
-    const newPurchase = await Purchase.create({ purchase_date, purchased_quantity, product_id });
+    const newPurchase = await Purchase.create({ purchase_date, purchased_quantity, component_id });
     res.status(201).json(newPurchase);
 
   } catch (error) {

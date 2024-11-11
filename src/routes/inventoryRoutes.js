@@ -13,7 +13,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/inventory/raw-materials:
+ * /api/v1/inventory-management/raw-materials:
  *   get:
  *     summary: Retrieve raw material inventory data
  *     tags: [Inventory]
@@ -27,13 +27,13 @@ const router = express.Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   Product_ID:
+ *                   component_id:
  *                     type: integer
  *                     example: 1
- *                   Product_Name:
+ *                   component_name:
  *                     type: string
  *                     example: "Steel Rod"
- *                   Product_Category:
+ *                   Component_Category:
  *                     type: string
  *                     example: "Raw Material"
  *                   Available_Quantity:
@@ -46,7 +46,7 @@ router.get('/raw-materials', getRawMaterialInventoryData);
 
 /**
  * @swagger
- * /api/v1/inventory/finished-goods:
+ * /api/v1/inventory-management/finished-goods:
  *   get:
  *     summary: Retrieve finished goods inventory data
  *     tags: [Inventory]
@@ -63,13 +63,13 @@ router.get('/raw-materials', getRawMaterialInventoryData);
  *                   Manufactured_Date:
  *                     type: string
  *                     example: "2023-10-01"
- *                   Product_ID:
+ *                   component_id:
  *                     type: integer
  *                     example: 2
- *                   Product_Name:
+ *                   component_name:
  *                     type: string
  *                     example: "Wrench"
- *                   Product_Category:
+ *                   Component_Category:
  *                     type: string
  *                     example: "Tools"
  *                   Manufactured_Quantity:

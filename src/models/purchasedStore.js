@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db'); 
-const Product = require('./Product');
+const Component = require('../models/component');
 
 const PurchaseStore = sequelize.define(
   'PurchaseStore',
@@ -11,12 +11,12 @@ const PurchaseStore = sequelize.define(
       autoIncrement: true, 
       allowNull: false, 
     },
-    product_id: {
+    component_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Product,
-        key: 'product_id',
+        model: Component,
+        key: 'component_id',
       },
     },
     available_quantity: {
@@ -30,8 +30,8 @@ const PurchaseStore = sequelize.define(
 );
 
 // // Define associations **after** the model definitions
-// FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
-// FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
+// FinishedStore.belongsTo(FinishedComponent, { foreignKey: 'finished_component_id' });
+// FinishedComponent.hasOne(FinishedStore, { foreignKey: 'finished_component_id' });
 // PurchaseStore.belongsTo(FinishedStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
 // FinishedStore.hasMany(PurchaseStore, { foreignKey: 'finished_store_id' }); // Example association, if needed
 

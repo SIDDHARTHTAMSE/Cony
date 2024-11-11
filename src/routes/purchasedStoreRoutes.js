@@ -30,13 +30,13 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               component_id:
  *                 type: integer
- *                 description: ID of the associated product
+ *                 description: ID of the associated Component
  *                 example: 1
  *               available_quantity:
  *                 type: integer
- *                 description: Available quantity of the product
+ *                 description: Available quantity of the Component
  *                 example: 100
  *     responses:
  *       201:
@@ -49,7 +49,7 @@ const router = express.Router();
  *                 purchase_store_id:
  *                   type: integer
  *                   example: 1
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                   example: 1
  *                 available_quantity:
@@ -79,7 +79,7 @@ router.post('/', createPurchaseStore);
  *                   purchase_store_id:
  *                     type: integer
  *                     example: 1
- *                   product_id:
+ *                   component_id:
  *                     type: integer
  *                     example: 1
  *                   available_quantity:
@@ -112,7 +112,7 @@ router.get('/', getAllPurchaseStores);
  *                 purchase_store_id:
  *                   type: integer
  *                   example: 1
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                   example: 1
  *                 available_quantity:
@@ -143,7 +143,7 @@ router.get('/:purchase_store_id', getPurchaseStoreById);
  *           schema:
  *             type: object
  *             properties:
- *               product_id:
+ *               component_id:
  *                 type: integer
  *                 example: 2
  *               available_quantity:
@@ -160,7 +160,7 @@ router.get('/:purchase_store_id', getPurchaseStoreById);
  *                 purchase_store_id:
  *                   type: integer
  *                   example: 1
- *                 product_id:
+ *                 component_id:
  *                   type: integer
  *                   example: 2
  *                 available_quantity:

@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const Category = require('./Category');
+const Category = require('../models/category');
 
-const Product = sequelize.define('Product', {
-  product_id: {
+const Component = sequelize.define('Component', {
+  component_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  product_name: {
+  component_name: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
@@ -20,10 +20,6 @@ const Product = sequelize.define('Product', {
       key: 'category_id',
     },
   },
-}, { tableName: 'products' });
+}, { tableName: 'components' });
 
-// // Associations
-// Product.belongsTo(Category, { foreignKey: 'category_id' });
-// Category.hasMany(Product, { foreignKey: 'category_id' });
-
-module.exports = Product;
+module.exports = Component;

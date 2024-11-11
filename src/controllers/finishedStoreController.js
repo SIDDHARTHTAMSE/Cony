@@ -1,10 +1,10 @@
 const FinishedStore = require('../models/finishedStore');
-const Product = require('../models/Product');
+const Component = require('../models/component');
 const { z } = require('zod');
 
 // Schema validation for FinishedStore
 const finishedStoreSchema = z.object({
-  product_id: z.number().min(1, "Product ID is required"),
+  component_id: z.number().min(1, "Component ID is required"),
   available_quantity: z.number().min(0, "Available quantity must be a non-negative integer"),
 });
 
@@ -16,7 +16,7 @@ exports.createFinishedStore = async (req, res, next) => {
     res.status(201).json(newFinishedStore);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
       } else {
         return res.status(400).json({ errors: error.errors });
@@ -68,7 +68,7 @@ exports.updateFinishedStore = async (req, res, next) => {
     res.status(200).json(updatedFinishedStore);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
       } else {
         return res.status(400).json({ errors: error.errors });

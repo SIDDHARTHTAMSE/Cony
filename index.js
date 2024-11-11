@@ -3,15 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./src/db'); 
 const categoryRoutes = require('./src/routes/categoryRoutes');
-const productRoutes = require('./src/routes/productRoutes');
+const componentRoutes = require('./src/routes/componentRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
-const finishedProductRoutes = require('./src/routes/finishedProductRoutes');
+const finishedComponentRoutes = require('./src/routes/finishedComponentRoutes');
 const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
 const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
 const inventoryRoutes = require('./src/routes/inventoryRoutes')
-const Product = require('./src/models/Product')
-const Category = require('./src/models/Category')
-const FinishedProduct = require('./src/models/FinishedProduct')
+const Component = require('./src/models/component')
+const Category = require('./src/models/category')
+const FinishedComponent = require('./src/models/finishedcomponent')
 const PurchaseStore = require('./src/models/purchasedStore')
 const FinishedStore = require('./src/models/finishedStore')
 
@@ -29,22 +29,22 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Define routes
 app.use('/api/v1/categories', categoryRoutes);
-app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/Components', componentRoutes);
 app.use('/api/v1/purchases', purchaseRoutes);
-app.use('/api/v1/finished-products', finishedProductRoutes);
+app.use('/api/v1/finished-Components', finishedComponentRoutes);
 app.use('/api/v1/purchase-store', purchasedStoreRoutes);
 app.use('/api/v1/finished-stores', finishedStoreRoutes);
 app.use('/api/v1/inventory-management', inventoryRoutes);
 
 // Register associations
-Product.belongsTo(Category, { foreignKey: 'category_id' });
-Category.hasMany(Product, { foreignKey: 'category_id' });
+Component.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Component, { foreignKey: 'category_id' });
 
-FinishedProduct.belongsTo(Product, { foreignKey: 'product_id' });
-Product.hasMany(FinishedProduct, { foreignKey: 'product_id' });
+FinishedComponent.belongsTo(Component, { foreignKey: 'component_id' });
+Component.hasMany(FinishedComponent, { foreignKey: 'component_id' });
 
-FinishedStore.belongsTo(FinishedProduct, { foreignKey: 'finished_product_id' });
-FinishedProduct.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
+FinishedStore.belongsTo(FinishedComponent, { foreignKey: 'finished_component_id' });
+FinishedComponent.hasOne(FinishedStore, { foreignKey: 'finished_component_id' });
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
     console.error(err.stack); // Log stack trace in development
     res.status(err.status || 500).json({ message: err.message, stack: err.stack });
   } else {
-    // In production, only send the error message to the client
+    // In Production, only send the error message to the client
     res.status(err.status || 500).json({ message: err.message });
   }
 });
@@ -91,9 +91,9 @@ app.listen(PORT, async () => {
 
 // Export all models for use in other parts of your application
 module.exports = {
-  Product,
+  Component,
   Category,
   PurchaseStore,
-  FinishedProduct,
+  FinishedComponent,
   FinishedStore,
 };

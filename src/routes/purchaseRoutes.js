@@ -36,7 +36,7 @@ const router = express.Router();
  *               purchased_quantity:
  *                 type: integer
  *                 example: 10
- *               product_id:
+ *               component_id:
  *                 type: integer
  *                 example: 1
  *     responses:
@@ -72,10 +72,10 @@ router.post('/', createPurchase);
  *                   purchased_quantity:
  *                     type: integer
  *                     example: 10
- *                   product_id:
+ *                   component_id:
  *                     type: integer
  *                     example: 1
- *                   product:
+ *                   Component:
  *                     type: object
  *                     properties:
  *                       name:

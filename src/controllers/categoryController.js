@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+const Category = require('../models/category');
 const { z } = require('zod');
 
 // Zod schema for validating category data
@@ -11,7 +11,7 @@ exports.createCategory = async (req, res, next) => {
   try {
     const validatedData = categorySchema.parse(req.body);
     const newCategory = await Category.create(validatedData);
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'Production') {
       const { createdAt, updatedAt, ...categoryWithoutTimestamps } = newCategory.toJSON();
       return res.status(201).json(categoryWithoutTimestamps);
     }else{
@@ -19,7 +19,7 @@ exports.createCategory = async (req, res, next) => {
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
       }else{
         return res.status(400).json({ errors: error.errors });
@@ -49,8 +49,8 @@ exports.getCategoryById = async (req, res, next) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    if (process.env.NODE_ENV === 'production') {
-      // In production, remove createdAt and updatedAt
+    if (process.env.NODE_ENV === 'Production') {
+      // In Production, remove createdAt and updatedAt
       const { createdAt, updatedAt, ...categoryData } = category.get();
       return res.status(200).json(categoryData);
     } else {
@@ -77,7 +77,7 @@ exports.updateCategory = async (req, res, next) => {
     res.status(200).json(updatedCategory);
   } catch (error) {
    if (error instanceof z.ZodError) {
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
       }else{
         return res.status(400).json({ errors: error.errors });
