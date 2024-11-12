@@ -9,11 +9,14 @@ const finishedComponentRoutes = require('./src/routes/finishedComponentRoutes');
 const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
 const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
 const inventoryRoutes = require('./src/routes/inventoryRoutes')
+const productRoutes = require('./src/routes/productsRoutes')
+
 const Component = require('./src/models/component')
 const Category = require('./src/models/category')
 const FinishedComponent = require('./src/models/finishedcomponent')
 const PurchaseStore = require('./src/models/purchasedStore')
 const FinishedStore = require('./src/models/finishedStore')
+const Product = require('./src/models/products')
 
 // Import Swagger setup
 const { swaggerUi, swaggerDocs } = require('./src/config/swagger');
@@ -35,6 +38,7 @@ app.use('/api/v1/finished-Components', finishedComponentRoutes);
 app.use('/api/v1/purchase-store', purchasedStoreRoutes);
 app.use('/api/v1/finished-stores', finishedStoreRoutes);
 app.use('/api/v1/inventory-management', inventoryRoutes);
+app.use('/api/v1/products', productRoutes);
 
 // Register associations
 Component.belongsTo(Category, { foreignKey: 'category_id' });
