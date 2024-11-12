@@ -35,8 +35,7 @@ const sequelize = require('../db');
       INNER JOIN 
         categories c ON p.category_id = c.category_id
       LEFT JOIN 
-        purchase_store ps ON ps.purchase_id = p.component_id
-`;
+        purchase_store ps ON ps.component_id = p.component_id`;
  
     const [results] = await sequelize.query(query);
  
