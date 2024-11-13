@@ -10,17 +10,34 @@ const ProductComponentSchema = z.object({
 exports.createProductComponent = async (req, res, next) => {
     try {
         const validatedData = ProductComponentSchema.parse(req.body);
+        const existingProductComponent = await ProductComponent.findOne({
+            where: {
+                product_id: validatedData.product_id,
+                component_id: validatedData.component_id,
+            },
+        });
+
+        if (existingProductComponent) {
+            return res.status(400).json({
+                message: "This component is already added to this product.",
+            });
+        }
+
         const newProductComponent = await ProductComponent.create(validatedData);
-        res.status(201).json(newProductComponent);
+        return res.status(201).json(newProductComponent);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            if (process.env.NODE_ENV === 'Production') {
-              return res.status(400).json({ message: error.errors[0].message });
-            }else{
-              return res.status(400).json({ errors: error.errors });
+            if (process.env.NODE_ENV === 'production') {
+                return res.status(400).json({ message: error.errors[0].message });
+            } else {
+                return res.status(400).json({ errors: error.errors });
             }
-          }
-          next(error);
+        }
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: "This component is already added to this product." });
+        }
+        
+        next(error);
     }
 };
 
