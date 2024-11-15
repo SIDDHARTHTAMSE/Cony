@@ -7,6 +7,10 @@ const productSchema = z.object({
 
 exports.createProduct = async (req, res, next) => {
     try {
+        const { product_name } = req.body;
+        if (!product_name) {
+            return res.status(400).json({ message: "The product_name is required."})
+        }
         const validatedData = productSchema.parse(req.body);
         const newProduct = await Product.create(validatedData);
         if (process.env.NODE_ENV === 'Production') {
