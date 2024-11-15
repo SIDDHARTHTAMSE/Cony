@@ -9,6 +9,13 @@ const ProductComponentSchema = z.object({
 
 exports.createProductComponent = async (req, res, next) => {
     try {
+        const { product_id, component_id } = req.body;
+        if (!product_id) {
+            return res.status(400).json({ message: "The product_id is required."})
+        }
+        if (!component_id) {
+            return res.status(400).json({ message: "The component_id is required."})
+        }
         const validatedData = ProductComponentSchema.parse(req.body);
         const existingProductComponent = await ProductComponent.findOne({
             where: {

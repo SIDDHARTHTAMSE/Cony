@@ -32,11 +32,11 @@ const router = express.Router();
  *               product_id:
  *                 type: integer
  *                 description: ID of the Product
- *                 example: 1
+ *                 example: null
  *               component_id:
  *                 type: integer
  *                 description: ID of the Component
- *                 example: 2
+ *                 example: null
  *               quantity:
  *                 type: integer
  *                 description: Quantity of Component in the Product
