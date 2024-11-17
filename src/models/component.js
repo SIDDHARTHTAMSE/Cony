@@ -15,6 +15,7 @@ const Component = sequelize.define('Component', {
   },
   category_id: {
     type: DataTypes.INTEGER,
+    allowNull: true, 
     references: {
       model: Category,
       key: 'category_id',
