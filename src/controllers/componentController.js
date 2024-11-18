@@ -10,17 +10,13 @@ const ComponentSchema = z.object({
 //Create a new Component
 exports.createComponent = async (req, res, next) => {
   try {
-    console.log("Getting request", req.body);
-
     const validatedData = ComponentSchema.parse(req.body);
-
-    console.log("Validated Data before conversion:", validatedData);
 
     const dataToSave = {
       ...validatedData,
       category_id: validatedData?.category_id
         ? parseInt(validatedData?.category_id, 10)
-        : null, // Convert to integer or null
+        : null, 
     };
 
     // Check if the component_name already exists
@@ -28,15 +24,11 @@ exports.createComponent = async (req, res, next) => {
       where: { component_name: validatedData.component_name },
     });
 
-    console.log("existing data is", existingComponent)
-
     if (existingComponent) {
       res.status(409).json({ message: "Component name already exists." });
-      console.log("error message to client")
     }else{
       const newComponent = await Component.create(validatedData);
       res.status(201).json(newComponent);
-      console.log("new component is",newComponent)
     }
 
   } catch (error) {
@@ -83,6 +75,13 @@ exports.updateComponent = async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = ComponentSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      category_id: validatedData?.category_id
+        ? parseInt(validatedData?.category_id, 10)
+        : null, 
+    };
     
     const [updated] = await Component.update(validatedData, { where: { component_id: id } });
     
