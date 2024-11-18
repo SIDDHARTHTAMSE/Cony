@@ -24,13 +24,13 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               product_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the product
- *                 example: 1
+ *                 example: "1"
  *               order_quantity:
- *                 type: integer
+ *                 type: string
  *                 description: Quantity of the product to order
- *                 example: 100
+ *                 example: "100"
  *     responses:
  *       201:
  *         description: OrderConfig created successfully
@@ -112,13 +112,13 @@ router.get('/:id', getOrderConfigById);
  *             type: object
  *             properties:
  *               product_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the product
- *                 example: 2
+ *                 example: "2"
  *               order_quantity:
- *                 type: integer
+ *                 type: string
  *                 description: Quantity of the product to order
- *                 example: 200
+ *                 example: "200"
  *     responses:
  *       200:
  *         description: OrderConfig updated successfully

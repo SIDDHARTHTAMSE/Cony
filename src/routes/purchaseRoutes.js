@@ -34,11 +34,11 @@ const router = express.Router();
  *                 type: string
  *                 example: "2024-11-05"
  *               purchased_quantity:
- *                 type: integer
- *                 example: 10
+ *                 type: string
+ *                 example: "10"
  *               component_id:
- *                 type: integer
- *                 example: 1
+ *                 type: string
+ *                 example: "1"
  *     responses:
  *       201:
  *         description: Created
@@ -129,8 +129,8 @@ router.get('/:id', getPurchaseById);
  *                 type: string
  *                 example: "2024-11-05"
  *               purchased_quantity:
- *                 type: integer
- *                 example: 15
+ *                 type: string
+ *                 example: "15"
  *     responses:
  *       200:
  *         description: Updated
