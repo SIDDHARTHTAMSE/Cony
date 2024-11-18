@@ -3,16 +3,25 @@ const { z } = require('zod');
 
 // Zod schema for Component validation
 const ComponentSchema = z.object({
-  category_id: z.number().min(1, "Category ID must be greater than 0").optional(),
+  category_id: z.string().min(1, "Category ID must be greater than 0").optional(),
   component_name: z.string().nonempty("Component name is required"),
 });
 
 //Create a new Component
 exports.createComponent = async (req, res, next) => {
   try {
-    // console.log("Getting request", req.body);
+    console.log("Getting request", req.body);
 
     const validatedData = ComponentSchema.parse(req.body);
+
+    console.log("Validated Data before conversion:", validatedData);
+
+    const dataToSave = {
+      ...validatedData,
+      category_id: validatedData?.category_id
+        ? parseInt(validatedData?.category_id, 10)
+        : null, // Convert to integer or null
+    };
 
     // Check if the component_name already exists
     const existingComponent = await Component.findOne({
@@ -23,11 +32,11 @@ exports.createComponent = async (req, res, next) => {
 
     if (existingComponent) {
       res.status(409).json({ message: "Component name already exists." });
-      // console.log("error message to client")
+      console.log("error message to client")
     }else{
       const newComponent = await Component.create(validatedData);
       res.status(201).json(newComponent);
-      // console.log(newComponent)
+      console.log("new component is",newComponent)
     }
 
   } catch (error) {
