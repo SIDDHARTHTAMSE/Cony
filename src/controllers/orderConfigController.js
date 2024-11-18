@@ -2,13 +2,24 @@ const OrderConfig = require('../models/orderConfig');
 const { z } = require('zod');
 
 const OrderConfigSchema = z.object({
-    product_id: z.number().min(1, "Product ID is required"),
-    order_quantity: z.number().positive("Order Quantity must be greater than 0"),
+    product_id: z.string().min(1, "Product ID is required"),
+    order_quantity: z.string().nonempty("Order Quantity must be greater than 0"),
 });
 
 exports.createOrderConfig = async (req, res, next) => {
     try {
         const validatedData = OrderConfigSchema.parse(req.body);
+
+        const dataToSave = {
+            ...validatedData,
+            product_id: validatedData?.product_id
+              ? parseInt(validatedData.product_id, 10)
+              : null, 
+            order_quantity: validatedData?.order_quantity
+              ? parseInt(validatedData.order_quantity, 10)
+              : null, 
+          };
+
         const newOrderConfig = await OrderConfig.create(validatedData);
         res.status(201).json(newOrderConfig);
     } catch (error) {
@@ -52,6 +63,17 @@ exports.updateOrderConfig = async(req, res, next) => {
     try {
         const { id } = req.params;
         const validatedData = OrderConfigSchema.parse(req.body);
+
+        const dataToSave = {
+            ...validatedData,
+            product_id: validatedData?.product_id
+              ? parseInt(validatedData.product_id, 10)
+              : null, 
+            order_quantity: validatedData?.order_quantity
+              ? parseInt(validatedData.order_quantity, 10)
+              : null, 
+          };
+
 
         const [updated] = await OrderConfig.update(validatedData, { where: { order_config_id: id} });
 
