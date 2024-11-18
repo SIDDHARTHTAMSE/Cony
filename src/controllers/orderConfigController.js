@@ -4,36 +4,45 @@ const { z } = require('zod');
 const OrderConfigSchema = z.object({
     product_id: z.string().min(1, "Product ID is required"),
     order_quantity: z.string().nonempty("Order Quantity must be greater than 0"),
-});
-
-exports.createOrderConfig = async (req, res, next) => {
+  });
+  
+  // Support both single object and array
+  const OrderConfigInputSchema = z.union([
+    OrderConfigSchema,               // Single object
+    z.array(OrderConfigSchema),      // Array of objects
+  ]);
+  
+  exports.createOrderConfig = async (req, res, next) => {
     try {
-        const validatedData = OrderConfigSchema.parse(req.body);
-
-        const dataToSave = {
-            ...validatedData,
-            product_id: validatedData?.product_id
-              ? parseInt(validatedData.product_id, 10)
-              : null, 
-            order_quantity: validatedData?.order_quantity
-              ? parseInt(validatedData.order_quantity, 10)
-              : null, 
-          };
-
-        const newOrderConfig = await OrderConfig.create(validatedData);
-        res.status(201).json(newOrderConfig);
+      // Validate the input as either a single object or an array
+      const validatedInput = OrderConfigInputSchema.parse(req.body);
+  
+      // Normalize to an array for consistent processing
+      const orders = Array.isArray(validatedInput) ? validatedInput : [validatedInput];
+  
+      // Convert and save each order configuration
+      const dataToSave = orders.map((order) => ({
+        product_id: parseInt(order.product_id, 10),
+        order_quantity: parseInt(order.order_quantity, 10),
+      }));
+  
+      // Save all configurations to the database
+      const newOrderConfigs = await OrderConfig.bulkCreate(dataToSave);
+  
+      // Respond with the saved configurations
+      res.status(201).json(newOrderConfigs);
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            if (process.env.NODE_ENV === 'Production') {
-              return res.status(400).json({ message: error.errors[0].message });
-            }else{
-              return res.status(400).json({ errors: error.errors });
-            }
-          }
-          next(error);
+      if (error instanceof z.ZodError) {
+        if (process.env.NODE_ENV === "Production") {
+          return res.status(400).json({ message: error.errors[0].message });
+        } else {
+          return res.status(400).json({ errors: error.errors });
+        }
+      }
+      next(error);
     }
-};
-
+  };
+  
 
 exports.getAllOrderConfig = async (req, res, next) => {
     try {
