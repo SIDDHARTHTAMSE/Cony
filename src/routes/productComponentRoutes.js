@@ -30,17 +30,17 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               product_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the Product
- *                 example: null
+ *                 example: "null"
  *               component_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the Component
- *                 example: null
+ *                 example: "null"
  *               quantity:
- *                 type: integer
+ *                 type: string
  *                 description: Quantity of Component in the Product
- *                 example: 10
+ *                 example: "10"
  *     responses:
  *       201:
  *         description: ProductComponent created successfully
@@ -122,14 +122,14 @@ router.get('/:id', getProductComponentById);
  *             type: object
  *             properties:
  *               product_id:
- *                 type: integer
- *                 example: 1
+ *                 type: string
+ *                 example: "1"
  *               component_id:
- *                 type: integer
- *                 example: 2
+ *                 type: string
+ *                 example: "2"
  *               quantity:
- *                 type: integer
- *                 example: 20
+ *                 type: string
+ *                 example: "20"
  *     responses:
  *       200:
  *         description: Updated ProductComponent

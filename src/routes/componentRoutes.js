@@ -25,9 +25,9 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               category_id:
- *                 type: integer
+ *                 type: string
  *                 description: The ID of the Component category
- *                 example: 1
+ *                 example: "1"
  *               component_name:
  *                 type: string
  *                 description: Name of the Component
@@ -110,8 +110,8 @@ router.get('/:id', getComponentById);
  *             type: object
  *             properties:
  *               category_id:
- *                 type: integer
- *                 example: 2
+ *                 type: string
+ *                 example: "2"
  *               component_name:
  *                 type: string
  *                 example: "Laptop"

@@ -31,12 +31,12 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
- *                 example: 1
+ *                 type: string
+ *                 example: "1"
  *                 description: ID of the Component
  *               available_quantity:
- *                 type: integer
- *                 example: 50
+ *                 type: string
+ *                 example: "50"
  *                 description: Available quantity of the finished Component
  *     responses:
  *       201:
@@ -73,13 +73,13 @@ router.post('/', createFinishedStore);
  *                 properties:
  *                   finished_store_id:
  *                     type: integer
- *                     example: 1
+ *                     example: "1"
  *                   component_id:
  *                     type: integer
- *                     example: 1
+ *                     example: "1"
  *                   available_quantity:
  *                     type: integer
- *                     example: 100
+ *                     example: "100"
  */
 router.get('/', getAllFinishedStores);
 
@@ -109,10 +109,10 @@ router.get('/', getAllFinishedStores);
  *                   example: 1
  *                 component_id:
  *                   type: integer
- *                   example: 1
+ *                   example: "1"
  *                 available_quantity:
  *                   type: integer
- *                   example: 100
+ *                   example: "100"
  *       404:
  *         description: Not Found
  */
@@ -139,11 +139,11 @@ router.get('/:id', getFinishedStoreById);
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
- *                 example: 1
+ *                 type: string
+ *                 example: "1"
  *               available_quantity:
- *                 type: integer
- *                 example: 200
+ *                 type: string
+ *                 example: "200"
  *     responses:
  *       200:
  *         description: Updated
