@@ -7,7 +7,7 @@ const FinishedStore = require('../models/finishedStore')
 const finishedComponentSchema = z.object({
   component_id: z.number().positive("Component ID must be a positive integer"),
   manufactured_date: z.string().nonempty("Manufactured date is required")
-                      .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
   manufactured_quantity: z.number().positive("Manufactured quantity must be greater than 0"),
 });
 
