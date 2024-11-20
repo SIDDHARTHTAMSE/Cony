@@ -15,28 +15,86 @@ const router = express.Router();
  * @swagger
  * /api/v1/Components:
  *   post:
- *     summary: Create a new Component
+ *     summary: Create multiple Components
  *     tags: [Components]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               category_id:
- *                 type: string
- *                 description: The ID of the Component category
- *                 example: "1"
- *               component_name:
- *                 type: string
- *                 description: Name of the Component
- *                 example: "Smartphone"
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 category_id:
+ *                   type: string
+ *                   description: The ID of the Component category
+ *                   example: "1"
+ *                 component_name:
+ *                   type: string
+ *                   description: Name of the Component
+ *                   example: "Processor"
  *     responses:
  *       201:
- *         description: Created
+ *         description: Components created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 components:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: The ID of the created component.
+ *                         example: 1
+ *                       component_name:
+ *                         type: string
+ *                         description: The name of the component.
+ *                         example: "Processor"
+ *                       category_id:
+ *                         type: integer
+ *                         description: The category ID of the component.
+ *                         example: 101
+ *       409:
+ *         description: Conflict. A component with the same name already exists.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Component with name 'Processor' already exists."
  *       400:
- *         description: Bad Request
+ *         description: Bad request. Validation error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                         example: "Component name is required."
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: "An unexpected error occurred."
  */
 router.post('/', createComponent);
 
