@@ -5,15 +5,31 @@ const FinishedStore = require('../models/finishedStore')
 
 // Define Zod schema for finished Component validation
 const finishedComponentSchema = z.object({
-  component_id: z.number().positive("Component ID must be a positive integer"),
+  component_id: z.string().nonempty("Component ID must be a positive integer"),
   manufactured_date: z.string().nonempty("Manufactured date is required")
-                      .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+<<<<<<< HEAD
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
   manufactured_quantity: z.number().positive("Manufactured quantity must be greater than 0"),
+
+                      .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+  manufactured_quantity: z.string().nonempty("Manufactured quantity must be greater than 0"),
+>>>>>>> 25f832ef77eb8f6c89eb20adc722326dffd10daf
 });
 
 // Create a new Finished Component
 exports.createFinishedComponent = async (req, res, next) => {
   const validation = finishedComponentSchema.safeParse(req.body);
+
+  const dataToSave = {
+    ...validation,
+    component_id: validation?.component_id
+      ? parseInt(validation.component_id, 10)
+      : null, 
+    manufactured_quantity: validation?.manufactured_quantity
+      ? parseInt(validation.manufactured_quantity, 10)
+      : null, 
+  };
+
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
@@ -87,6 +103,16 @@ exports.updateFinishedComponent = async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = finishedComponentSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      component_id: validatedData?.component_id
+        ? parseInt(validatedData.component_id, 10)
+        : null, 
+      manufactured_quantity: validatedData?.manufactured_quantity
+        ? parseInt(validatedData.manufactured_quantity, 10)
+        : null, 
+    };
     
     const [updated] = await FinishedComponent.update(validatedData, { where: { finished_component_id: id } });
     

@@ -25,17 +25,17 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the associated Component
- *                 example: 1
+ *                 example: "1"
  *               manufactured_date:
  *                 type: string
  *                 description: Manufacture date in YYYY-MM-DD format
  *                 example: "2023-10-01"
  *               manufactured_quantity:
- *                 type: integer
+ *                 type: string
  *                 description: Quantity of Component manufactured
- *                 example: 100
+ *                 example: "100"
  *     responses:
  *       201:
  *         description: Created
@@ -117,14 +117,14 @@ router.get('/:id', getFinishedComponentById);
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
- *                 example: 2
+ *                 type: string
+ *                 example: "2"
  *               manufactured_date:
  *                 type: string
  *                 example: "2023-11-15"
  *               manufactured_quantity:
- *                 type: integer
- *                 example: 50
+ *                 type: string
+ *                 example: "50"
  *     responses:
  *       200:
  *         description: Updated

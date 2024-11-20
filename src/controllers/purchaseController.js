@@ -6,13 +6,24 @@ const PurchaseStore = require('../models/purchasedStore');
 // Define Zod schema for purchase data validation
 const purchaseSchema = z.object({
   purchase_date: z.string().nonempty("Purchase date is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
-  purchased_quantity: z.number().positive("Purchased quantity must be a positive number"),
-  component_id: z.number().positive("Component ID must be a positive integer"),
+  purchased_quantity: z.string().min(1, "Purchased quantity must be a positive number"),
+  component_id: z.string().min(1, "Component ID must be a positive integer"),
 });
 
 // Create a new Purchase
 exports.createPurchase = async (req, res, next) => {
   const validation = purchaseSchema.safeParse(req.body);
+
+  const dataToSave = {
+    ...validation,
+    purchased_quantity: validation?.purchased_quantity
+      ? parseInt(validation.purchased_quantity, 10)
+      : null, 
+    component_id: validation?.component_id
+      ? parseInt(validation.component_id, 10)
+      : null, 
+  };
+
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
@@ -74,6 +85,17 @@ exports.updatePurchase = async (req, res, next) => {
   
   // Validate request body with partial schema
   const validation = purchaseSchema.partial().safeParse(req.body);
+
+  const dataToSave = {
+    ...validation,
+    purchased_quantity: validation?.purchased_quantity
+      ? parseInt(validation.purchased_quantity, 10)
+      : null, // Convert to integer or null
+    component_id: validation?.component_id
+      ? parseInt(validation.component_id, 10)
+      : null, // Convert to integer or null
+  };
+
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }

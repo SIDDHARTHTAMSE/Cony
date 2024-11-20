@@ -31,13 +31,13 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
+ *                 type: string
  *                 description: ID of the associated Component
- *                 example: 1
+ *                 example: "1"
  *               available_quantity:
- *                 type: integer
+ *                 type: string
  *                 description: Available quantity of the Component
- *                 example: 100
+ *                 example: "100"
  *     responses:
  *       201:
  *         description: Purchase store entry created successfully
@@ -144,11 +144,11 @@ router.get('/:purchase_store_id', getPurchaseStoreById);
  *             type: object
  *             properties:
  *               component_id:
- *                 type: integer
- *                 example: 2
+ *                 type: string
+ *                 example: "2"
  *               available_quantity:
- *                 type: integer
- *                 example: 50
+ *                 type: string
+ *                 example: "50"
  *     responses:
  *       200:
  *         description: Purchase store entry updated successfully

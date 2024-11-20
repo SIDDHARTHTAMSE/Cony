@@ -4,14 +4,25 @@ const { z } = require('zod');
 
 // Schema validation for FinishedStore
 const finishedStoreSchema = z.object({
-  component_id: z.number().min(1, "Component ID is required"),
-  available_quantity: z.number().min(0, "Available quantity must be a non-negative integer"),
+  component_id: z.string().min(1, "Component ID is required"),
+  available_quantity: z.string().min(0, "Available quantity must be a non-negative integer"),
 });
 
 // Create a new FinishedStore
 exports.createFinishedStore = async (req, res, next) => {
   try {
     const validatedData = finishedStoreSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      component_id: validatedData?.component_id
+        ? parseInt(validatedData.component_id, 10)
+        : null, 
+      available_quantity: validatedData?.available_quantity
+        ? parseInt(validatedData.available_quantity, 10)
+        : null, 
+    };
+
     const newFinishedStore = await FinishedStore.create(validatedData);
     res.status(201).json(newFinishedStore);
   } catch (error) {
@@ -57,6 +68,16 @@ exports.updateFinishedStore = async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = finishedStoreSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      component_id: validatedData?.component_id
+        ? parseInt(validatedData.component_id, 10)
+        : null, 
+      available_quantity: validatedData?.available_quantity
+        ? parseInt(validatedData.available_quantity, 10)
+        : null, 
+    };
 
     const [updated] = await FinishedStore.update(validatedData, { where: { finished_store_id: id } });
 

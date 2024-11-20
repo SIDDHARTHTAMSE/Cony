@@ -4,8 +4,8 @@ const { z } = require('zod');
 
 // Validation schema for PurchaseStore data
 const purchaseStoreSchema = z.object({
-  component_id: z.number().min(1, "Component ID is required"),
-  available_quantity: z.number().min(1, "Available quantity must be a non-negative integer"),
+  component_id: z.string().min(1, "Component ID is required"),
+  available_quantity: z.string().min(1, "Available quantity must be a non-negative integer"),
 });
 
 // Create a new PurchaseStore
@@ -13,6 +13,16 @@ exports.createPurchaseStore = async (req, res, next) => {
   try {
     // Validate request data
     const validatedData = purchaseStoreSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      component_id: validatedData?.component_id
+        ? parseInt(validatedData.component_id, 10)
+        : null, 
+      available_quantity: validatedData?.available_quantity
+        ? parseInt(validatedData.available_quantity, 10)
+        : null, 
+    };
     
     // Check if the Component exists before creating a PurchaseStore
     const ComponentExists = await Component.findByPk(validatedData.component_id);
@@ -71,6 +81,16 @@ exports.updatePurchaseStoreById = async (req, res, next) => {
   try {
     const { purchase_store_id } = req.params; // Correct the param name if necessary
     const validatedData = purchaseStoreSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      component_id: validatedData?.component_id
+        ? parseInt(validatedData.component_id, 10)
+        : null, 
+      available_quantity: validatedData?.available_quantity
+        ? parseInt(validatedData.available_quantity, 10)
+        : null, 
+    };
 
     const purchaseStore = await PurchaseStore.findByPk(purchase_store_id);
     if (!purchaseStore) {

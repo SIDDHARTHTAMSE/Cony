@@ -3,7 +3,7 @@ const { z } = require('zod');
 
 // Zod schema for Component validation
 const ComponentSchema = z.object({
-  category_id: z.number().min(1, "Category ID is required"),
+  category_id: z.string().min(1, "Category ID must be greater than 0").optional(),
   component_name: z.string().nonempty("Component name is required"),
 });
 
@@ -11,19 +11,38 @@ const ComponentSchema = z.object({
 exports.createComponent = async (req, res, next) => {
   try {
     const validatedData = ComponentSchema.parse(req.body);
-    const newComponent = await Component.create(validatedData);
-    res.status(201).json(newComponent);
+
+    const dataToSave = {
+      ...validatedData,
+      category_id: validatedData?.category_id
+        ? parseInt(validatedData?.category_id, 10)
+        : null, 
+    };
+
+    // Check if the component_name already exists
+    const existingComponent = await Component.findOne({
+      where: { component_name: validatedData.component_name },
+    });
+
+    if (existingComponent) {
+      res.status(409).json({ message: "Component name already exists." });
+    }else{
+      const newComponent = await Component.create(validatedData);
+      res.status(201).json(newComponent);
+    }
+
   } catch (error) {
     if (error instanceof z.ZodError) {
       if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
-      }else{
+      } else {
         return res.status(400).json({ errors: error.errors });
       }
     }
     next(error);
   }
 };
+
 
 //Get all Components
 exports.getAllComponents = async (req, res, next) => {
@@ -56,6 +75,13 @@ exports.updateComponent = async (req, res, next) => {
   try {
     const { id } = req.params;
     const validatedData = ComponentSchema.parse(req.body);
+
+    const dataToSave = {
+      ...validatedData,
+      category_id: validatedData?.category_id
+        ? parseInt(validatedData?.category_id, 10)
+        : null, 
+    };
     
     const [updated] = await Component.update(validatedData, { where: { component_id: id } });
     

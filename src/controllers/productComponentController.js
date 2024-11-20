@@ -2,25 +2,63 @@ const ProductComponent = require('../models/productComponents');
 const { z } = require('zod');
 
 const ProductComponentSchema = z.object({
-    product_id: z.number().min(1, "Product ID is required"),
-    component_id: z.number().min(1, "Component ID is required"),
-    quantity: z.number().positive("Quantity must be greater than 0"),
+    product_id: z.string().min(1, "Product ID is required"),
+    component_id: z.string().min(1, "Component ID is required"),
+    quantity: z.string().nonempty("Quantity must be greater than 0"),
 });
 
 exports.createProductComponent = async (req, res, next) => {
     try {
+        const { product_id, component_id } = req.body;
+        if (!product_id) {
+            return res.status(400).json({ message: "The product_id is required."})
+        }
+        if (!component_id) {
+            return res.status(400).json({ message: "The component_id is required."})
+        }
         const validatedData = ProductComponentSchema.parse(req.body);
+
+        const dataToSave = {
+            ...validatedData,
+            product_id: validatedData?.product_id
+              ? parseInt(validatedData.product_id, 10)
+              : null, 
+            component_id: validatedData?.component_id
+              ? parseInt(validatedData.component_id, 10)
+              : null, 
+            quantity: validatedData?.quantity
+              ? parseInt(validatedData.quantity, 10)
+              : null, 
+          };
+    
+        const existingProductComponent = await ProductComponent.findOne({
+            where: {
+                product_id: validatedData.product_id,
+                component_id: validatedData.component_id,
+            },
+        });
+
+        if (existingProductComponent) {
+            return res.status(400).json({
+                message: "This component is already added to this product.",
+            });
+        }
+
         const newProductComponent = await ProductComponent.create(validatedData);
-        res.status(201).json(newProductComponent);
+        return res.status(201).json(newProductComponent);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            if (process.env.NODE_ENV === 'Production') {
-              return res.status(400).json({ message: error.errors[0].message });
-            }else{
-              return res.status(400).json({ errors: error.errors });
+            if (process.env.NODE_ENV === 'production') {
+                return res.status(400).json({ message: error.errors[0].message });
+            } else {
+                return res.status(400).json({ errors: error.errors });
             }
-          }
-          next(error);
+        }
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: "This component is already added to this product." });
+        }
+        
+        next(error);
     }
 };
 
@@ -52,6 +90,19 @@ exports.updateProductComponent = async (req, res, next) => {
     try {
         const { id } = req.params;
         const validatedData = ProductComponentSchema.parse(req.body);
+
+        const dataToSave = {
+            ...validatedData,
+            product_id: validatedData?.product_id
+              ? parseInt(validatedData.product_id, 10)
+              : null, 
+            component_id: validatedData?.component_id
+              ? parseInt(validatedData.component_id, 10)
+              : null, 
+            quantity: validatedData?.quantity
+              ? parseInt(validatedData.quantity, 10)
+              : null, 
+          };
 
         const [updated] = await ProductComponent.update(validatedData, { where: { product_component_id: id } });
 
