@@ -2,22 +2,27 @@ const Component = require('../models/component');
 const { z } = require('zod');
 
 // Zod schema for Component validation
-const ComponentSchema = z.object({
-  category_id: z.string().min(1, "Category ID must be greater than 0").optional(),
-  component_name: z.string().nonempty("Component name is required"),
-});
+const ComponentsArraySchema = z.array (
+  z.object({
+    category_id: z.string().min(1, "Category ID must be greater than 0").optional(),
+    component_name: z.string().nonempty("Component name is required"),
+  })
+);
 
 //Create a new Component
 exports.createComponent = async (req, res, next) => {
   try {
-    const validatedData = ComponentSchema.parse(req.body);
+    const validatedDataArray = ComponentsArraySchema.parse(req.body);
 
-    const dataToSave = {
-      ...validatedData,
-      category_id: validatedData?.category_id
-        ? parseInt(validatedData?.category_id, 10)
-        : null, 
-    };
+    const savedComponents = [];
+
+    for (const validatedData of validatedDataArray) {
+      const dataToSave = {
+        ...validatedData,
+        category_id: validatedData?.category_id
+          ? parseInt(validatedData?.category_id, 10)
+          : null, 
+      };
 
     // Check if the component_name already exists
     const existingComponent = await Component.findOne({
@@ -25,11 +30,18 @@ exports.createComponent = async (req, res, next) => {
     });
 
     if (existingComponent) {
-      res.status(409).json({ message: "Component name already exists." });
-    }else{
-      const newComponent = await Component.create(validatedData);
-      res.status(201).json(newComponent);
+      return res.status(409).json({
+        message: `Component with name '${validatedData.component_name}' already exists.`,
+      });
     }
+
+    const newComponent = await Component.create(dataToSave);
+    savedComponents.push(newComponent);
+    }
+
+    res.status(201).json({
+      components: savedComponents,
+    });
 
   } catch (error) {
     if (error instanceof z.ZodError) {
