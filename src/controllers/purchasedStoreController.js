@@ -18,21 +18,32 @@ exports.createPurchaseStore = async (req, res, next) => {
       ...validatedData,
       component_id: validatedData?.component_id
         ? parseInt(validatedData.component_id, 10)
-        : null, 
+        : null,
       available_quantity: validatedData?.available_quantity
         ? parseInt(validatedData.available_quantity, 10)
-        : null, 
+        : null,
     };
-    
+
     // Check if the Component exists before creating a PurchaseStore
     const ComponentExists = await Component.findByPk(validatedData.component_id);
     if (!ComponentExists) {
       return res.status(400).json({ message: "Component does not exist" });
     }
 
-    // Create the new PurchaseStore entry
+    // Check if the PurchaseStore entry already exists for this component_id
+    const existingPurchaseStore = await PurchaseStore.findOne({
+      where: { component_id: validatedData.component_id },
+    });
+
+    if (existingPurchaseStore) {
+      // If PurchaseStore entry exists for the same component_id, return an error
+      return res.status(400).json({ message: "component_id already exists in PurchaseStore" });
+    }
+
+    // If no existing entry, create a new PurchaseStore entry
     const newPurchaseStore = await PurchaseStore.create(validatedData);
-    res.status(201).json(newPurchaseStore);
+    return res.status(201).json(newPurchaseStore);
+
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
