@@ -3,56 +3,66 @@ const FinishedComponent = require('../models/finishedcomponent');
 const Component = require('../models/component');
 const FinishedStore = require('../models/finishedStore')
 
-// Define Zod schema for finished Component validation
+// Define Zod schema for finished component data validation
 const finishedComponentSchema = z.object({
-  component_id: z.number().positive("Component ID must be a positive integer"),
-  manufactured_date: z.string().nonempty("Manufactured date is required")
-                      .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
-  manufactured_quantity: z.number().positive("Manufactured quantity must be greater than 0"),
+  component_id: z.string().min(1, "Component ID is required"),
+  manufactured_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
+  manufactured_quantity: z.string().min(1, "Manufactured quantity must be a positive number"),
 });
 
 // Create a new Finished Component
 exports.createFinishedComponent = async (req, res, next) => {
-  const validation = finishedComponentSchema.safeParse(req.body);
-  if (!validation.success) {
-    return res.status(400).json({ errors: validation.error.errors });
-  }
-
-  const { component_id, manufactured_date, manufactured_quantity } = req.body;
-
   try {
-    // Check if Component exists
-    const Components = await Component.findByPk(component_id);
-    if (!Components) {
-      return res.status(404).json({ message: 'Component not found' });
+    // Validate request data
+    const validation = finishedComponentSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({ errors: validation.error.errors });
     }
 
-    // Check if entry exists in FinishedStore
-    const finishedStoreEntry = await FinishedStore.findOne({ where: { component_id } });
+    const { component_id, manufactured_date, manufactured_quantity } = req.body;
+
+    // Prepare data for saving
+    const dataToSave = {
+      component_id: parseInt(component_id, 10),
+      manufactured_date,
+      manufactured_quantity: parseInt(manufactured_quantity, 10),
+    };
+
+    // Check if Component exists
+    const componentExists = await Component.findByPk(dataToSave.component_id);
+    if (!componentExists) {
+      return res.status(404).json({ message: "Component not found" });
+    }
+
+    // Create or update the FinishedStore entry
+    const finishedStoreEntry = await FinishedStore.findOne({
+      where: { component_id: dataToSave.component_id },
+    });
 
     if (finishedStoreEntry) {
-      // Update existing available quantity
-      finishedStoreEntry.available_quantity += manufactured_quantity;
+      // If the FinishedStore entry exists, update the available_quantity by adding manufactured_quantity
+      finishedStoreEntry.available_quantity += dataToSave.manufactured_quantity;
       await finishedStoreEntry.save();
     } else {
-      // Create a new FinishedStore entry
-      await FinishedStore.create({ component_id, available_quantity: manufactured_quantity });
+      // If no FinishedStore entry exists, create a new one with manufactured_quantity as the available_quantity
+      await FinishedStore.create({
+        component_id: dataToSave.component_id,
+        available_quantity: dataToSave.manufactured_quantity,
+      });
     }
 
-    // Create FinishedComponent record
-    const newFinishedComponent = await FinishedComponent.create({
-      component_id,
-      manufactured_date,
-      manufactured_quantity,
-    });
+    // Create a new FinishedComponent record
+    const newFinishedComponent = await FinishedComponent.create(dataToSave);
 
     res.status(201).json(newFinishedComponent);
-
   } catch (error) {
+    // Handle unexpected errors
     res.status(500).json({
-      message: "Internal Server Error while creating finished Component or updating inventory",
-      error: error.message
+      message: "Internal Server Error while creating Finished Component or updating inventory",
+      error: error.message,
     });
+    next(error);
   }
 };
 
