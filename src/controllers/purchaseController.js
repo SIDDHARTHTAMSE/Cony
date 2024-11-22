@@ -12,44 +12,48 @@ const purchaseSchema = z.object({
 
 // Create a new Purchase
 exports.createPurchase = async (req, res, next) => {
-  const validation = purchaseSchema.safeParse(req.body);
-
-  const dataToSave = {
-    ...validation,
-    purchased_quantity: validation?.purchased_quantity
-      ? parseInt(validation.purchased_quantity, 10)
-      : null, 
-    component_id: validation?.component_id
-      ? parseInt(validation.component_id, 10)
-      : null, 
-  };
-
-  if (!validation.success) {
-    return res.status(400).json({ errors: validation.error.errors });
-  }
-
-  const { purchase_date, purchased_quantity, component_id } = req.body;
-
   try {
+    // Validate request data
+    const validation = purchaseSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({ errors: validation.error.errors });
+    }
+
+    const { purchase_date, purchased_quantity, component_id } = req.body;
+
+    // Prepare data for saving
+    const dataToSave = {
+      purchase_date,
+      purchased_quantity: parseInt(purchased_quantity, 10),
+      component_id: parseInt(component_id, 10),
+    };
+
     // Check if Component exists
-    const Components = await Component.findByPk(component_id);
-    if (!Components) {
+    const componentExists = await Component.findByPk(dataToSave.component_id);
+    if (!componentExists) {
       return res.status(404).json({ message: 'Component not found' });
     }
 
-    // Find or update PurchaseStore entry
-    const purchaseStoreEntry = await PurchaseStore.findOne({ where: { component_id } });
+    // Create the new purchase record
+    const newPurchase = await Purchase.create(dataToSave);
+
+    // Find or update the PurchaseStore entry related to this component
+    const purchaseStoreEntry = await PurchaseStore.findOne({ where: { component_id: dataToSave.component_id } });
+
     if (purchaseStoreEntry) {
-      purchaseStoreEntry.available_quantity += purchased_quantity;
+      // If the PurchaseStore entry exists, update the available_quantity by adding the purchased_quantity
+      purchaseStoreEntry.available_quantity += dataToSave.purchased_quantity;
       await purchaseStoreEntry.save();
     } else {
-      await PurchaseStore.create({ component_id, available_quantity: purchased_quantity });
+      // If no PurchaseStore entry exists, create a new one with the purchased_quantity as the available quantity
+      await PurchaseStore.create({
+        component_id: dataToSave.component_id,
+        available_quantity: dataToSave.purchased_quantity,
+      });
     }
 
-    // Create a new purchase record
-    const newPurchase = await Purchase.create({ purchase_date, purchased_quantity, component_id });
     res.status(201).json(newPurchase);
-
   } catch (error) {
     next(error);
   }
