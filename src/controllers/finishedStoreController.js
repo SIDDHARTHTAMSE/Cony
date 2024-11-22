@@ -11,6 +11,7 @@ const finishedStoreSchema = z.object({
 // Create a new FinishedStore
 exports.createFinishedStore = async (req, res, next) => {
   try {
+    // Validate request data
     const validatedData = finishedStoreSchema.parse(req.body);
 
     const dataToSave = {
@@ -23,9 +24,32 @@ exports.createFinishedStore = async (req, res, next) => {
         : null, 
     };
 
-    const newFinishedStore = await FinishedStore.create(validatedData);
+    // Check if the Component exists before creating a FinishedStore
+    const componentExists = await Component.findByPk(dataToSave.component_id);
+    if (!componentExists) {
+      return res.status(400).json({ message: "Component does not exist" });
+    }
+
+    // Check if the FinishedStore entry already exists for this component_id
+    const existingFinishedStore = await FinishedStore.findOne({
+      where: { component_id: dataToSave.component_id },
+    });
+
+    if (existingFinishedStore) {
+      // If FinishedStore entry exists for the same component_id, return an error
+      return res.status(400).json({
+        message: `Component ID ${dataToSave.component_id} already exists in FinishedStore`,
+      });
+    }
+
+    // Create a new FinishedStore entry
+    const newFinishedStore = await FinishedStore.create(dataToSave);
+
+    // Return the newly created FinishedStore
     res.status(201).json(newFinishedStore);
+
   } catch (error) {
+    // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
