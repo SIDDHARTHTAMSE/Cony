@@ -1,10 +1,10 @@
 const FinishedStore = require('../models/finishedStore');
-const Component = require('../models/component');
+const Product = require('../models/products');
 const { z } = require('zod');
 
 // Schema validation for FinishedStore
 const finishedStoreSchema = z.object({
-  component_id: z.string().min(1, "Component ID is required"),
+  product_id: z.string().min(1, "Product ID is required"),
   available_quantity: z.string().min(0, "Available quantity must be a non-negative integer"),
 });
 
@@ -16,29 +16,29 @@ exports.createFinishedStore = async (req, res, next) => {
 
     const dataToSave = {
       ...validatedData,
-      component_id: validatedData?.component_id
-        ? parseInt(validatedData.component_id, 10)
+      product_id: validatedData?.product_id
+        ? parseInt(validatedData.product_id, 10)
         : null, 
       available_quantity: validatedData?.available_quantity
         ? parseInt(validatedData.available_quantity, 10)
         : null, 
     };
 
-    // Check if the Component exists before creating a FinishedStore
-    const componentExists = await Component.findByPk(dataToSave.component_id);
-    if (!componentExists) {
-      return res.status(400).json({ message: "Component does not exist" });
+    // Check if the Products exists before creating a FinishedStore
+    const productExists = await Product.findByPk(dataToSave.product_id);
+    if (!productExists) {
+      return res.status(400).json({ message: "Products does not exist" });
     }
 
-    // Check if the FinishedStore entry already exists for this component_id
+    // Check if the FinishedStore entry already exists for this product_id
     const existingFinishedStore = await FinishedStore.findOne({
-      where: { component_id: dataToSave.component_id },
+      where: { product_id: dataToSave.product_id },
     });
 
     if (existingFinishedStore) {
-      // If FinishedStore entry exists for the same component_id, return an error
+      // If FinishedStore entry exists for the same product_id, return an error
       return res.status(400).json({
-        message: `Component ID ${dataToSave.component_id} already exists in FinishedStore`,
+        message: `Product ID ${dataToSave.product_id} already exists in FinishedStore`,
       });
     }
 
@@ -95,8 +95,8 @@ exports.updateFinishedStore = async (req, res, next) => {
 
     const dataToSave = {
       ...validatedData,
-      component_id: validatedData?.component_id
-        ? parseInt(validatedData.component_id, 10)
+      product_id: validatedData?.product_id
+        ? parseInt(validatedData.product_id, 10)
         : null, 
       available_quantity: validatedData?.available_quantity
         ? parseInt(validatedData.available_quantity, 10)
