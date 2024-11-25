@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db'); // Import your DB instance
-const Component = require('../models/component'); 
+const Product = require('../models/products'); 
 
 const FinishedStore = sequelize.define(
   'FinishedStore',
@@ -11,12 +11,12 @@ const FinishedStore = sequelize.define(
       autoIncrement: true, // Optional auto-increment ID
       allowNull: false,
     },
-    component_id: {
+    product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Component,
-        key: 'component_id',
+        model: Product,
+        key: 'product_id',
       },
     },
     available_quantity: {

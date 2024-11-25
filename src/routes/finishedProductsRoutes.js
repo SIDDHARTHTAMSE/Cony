@@ -1,22 +1,22 @@
-// routes/finishedComponentRoutes.js
+// routes/finishedProductsRoutes.js
 const express = require('express');
-const { createFinishedComponent, getAllFinishedComponents, getFinishedComponentById, updateFinishedComponent, deleteFinishedComponent } = require('../controllers/finishedComponentController');
+const { createFinishedProducts, getAllFinishedProducts, getFinishedProductById, updateFinishedProducts, deleteFinishedProducts } = require('../controllers/finishedProductController');
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: FinishedComponents
- *   description: API for managing finished Components
+ *   name: FinishedProducts
+ *   description: API for managing finished Products
  */
 
 /**
  * @swagger
- * /api/v1/finished-Components:
+ * /api/v1/finished-products:
  *   post:
- *     summary: Create a new finished Component entry
- *     tags: [FinishedComponents]
+ *     summary: Create a new finished Products entry
+ *     tags: [FinishedProducts]
  *     requestBody:
  *       required: true
  *       content:
@@ -24,9 +24,9 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               component_id:
+ *               product_id:
  *                 type: string
- *                 description: ID of the associated Component
+ *                 description: ID of the associated Products
  *                 example: "1"
  *               manufactured_date:
  *                 type: string
@@ -34,7 +34,7 @@ const router = express.Router();
  *                 example: "2023-10-01"
  *               manufactured_quantity:
  *                 type: string
- *                 description: Quantity of Component manufactured
+ *                 description: Quantity of Products manufactured
  *                 example: "100"
  *     responses:
  *       201:
@@ -42,17 +42,17 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/', createFinishedComponent);
+router.post('/', createFinishedProducts);
 
 /**
  * @swagger
- * /api/v1/finished-Components:
+ * /api/v1/finished-products:
  *   get:
- *     summary: Get all finished Component entries
- *     tags: [FinishedComponents]
+ *     summary: Get all finished Products entries
+ *     tags: [FinishedProducts]
  *     responses:
  *       200:
- *         description: A list of finished Component entries
+ *         description: A list of finished Products entries
  *         content:
  *           application/json:
  *             schema:
@@ -60,10 +60,10 @@ router.post('/', createFinishedComponent);
  *               items:
  *                 type: object
  *                 properties:
- *                   finished_component_id:
+ *                   finished_product_id:
  *                     type: integer
  *                     example: 1
- *                   component_id:
+ *                   product_id:
  *                     type: integer
  *                     example: 1
  *                   manufactured_date:
@@ -73,40 +73,40 @@ router.post('/', createFinishedComponent);
  *                     type: integer
  *                     example: 100
  */
-router.get('/', getAllFinishedComponents);
+router.get('/', getAllFinishedProducts);
 
 /**
  * @swagger
- * /api/v1/finished-Components/{id}:
+ * /api/v1/finished-products/{id}:
  *   get:
- *     summary: Get a finished Component entry by ID
- *     tags: [FinishedComponents]
+ *     summary: Get a finished Products entry by ID
+ *     tags: [FinishedProducts]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the finished Component entry
+ *         description: The ID of the finished Products entry
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: The requested finished Component entry
+ *         description: The requested finished Products entry
  *       404:
- *         description: Finished Component not found
+ *         description: Finished Products not found
  */
-router.get('/:id', getFinishedComponentById);
+router.get('/:id', getFinishedProductById);
 
 /**
  * @swagger
- * /api/v1/finished-Components/{id}:
+ * /api/v1/finished-products/{id}:
  *   put:
- *     summary: Update a finished Component entry by ID
- *     tags: [FinishedComponents]
+ *     summary: Update a finished Products entry by ID
+ *     tags: [FinishedProducts]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the finished Component entry to update
+ *         description: The ID of the finished Products entry to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -116,7 +116,7 @@ router.get('/:id', getFinishedComponentById);
  *           schema:
  *             type: object
  *             properties:
- *               component_id:
+ *               product_id:
  *                 type: string
  *                 example: "2"
  *               manufactured_date:
@@ -129,29 +129,29 @@ router.get('/:id', getFinishedComponentById);
  *       200:
  *         description: Updated
  *       404:
- *         description: Finished Component not found
+ *         description: Finished Products not found
  */
-router.put('/:id', updateFinishedComponent);
+router.put('/:id', updateFinishedProducts);
 
 /**
  * @swagger
- * /api/v1/finished-Components/{id}:
+ * /api/v1/finished-products/{id}:
  *   delete:
- *     summary: Delete a finished Component entry by ID
- *     tags: [FinishedComponents]
+ *     summary: Delete a finished Products entry by ID
+ *     tags: [FinishedProducts]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the finished Component entry to delete
+ *         description: The ID of the finished Products entry to delete
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Finished Component deleted successfully
+ *         description: Finished Products deleted successfully
  *       404:
- *         description: Finished Component not found
+ *         description: Finished Products not found
  */
-router.delete('/:id', deleteFinishedComponent);
+router.delete('/:id', deleteFinishedProducts);
 
 module.exports = router;
