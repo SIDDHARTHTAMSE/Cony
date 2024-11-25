@@ -5,7 +5,7 @@ const sequelize = require('./src/db');
 const categoryRoutes = require('./src/routes/categoryRoutes');
 const componentRoutes = require('./src/routes/componentRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
-const finishedComponentRoutes = require('./src/routes/finishedComponentRoutes');
+const FinishedProductsRoutes = require('./src/routes/finishedProductsRoutes');
 const purchasedStoreRoutes = require('./src/routes/purchasedStoreRoutes')
 const finishedStoreRoutes = require('./src/routes/finishedStoreRoutes')
 const inventoryRoutes = require('./src/routes/inventoryRoutes')
@@ -16,7 +16,7 @@ const productConfigurationRoutes = require('./src/routes/productConfigurationRou
 
 const Component = require('./src/models/component')
 const Category = require('./src/models/category')
-const FinishedComponent = require('./src/models/finishedcomponent')
+const FinishedProducts = require('./src/models/finishedProducts')
 const PurchaseStore = require('./src/models/purchasedStore')
 const FinishedStore = require('./src/models/finishedStore')
 const Product = require('./src/models/products')
@@ -39,7 +39,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/Components', componentRoutes);
 app.use('/api/v1/purchases', purchaseRoutes);
-app.use('/api/v1/finished-Components', finishedComponentRoutes);
+app.use('/api/v1/finished-products', FinishedProductsRoutes);
 app.use('/api/v1/purchase-store', purchasedStoreRoutes);
 app.use('/api/v1/finished-stores', finishedStoreRoutes);
 app.use('/api/v1/inventory-management', inventoryRoutes);
@@ -52,11 +52,11 @@ app.use('/api/v1/productConfiguration', productConfigurationRoutes);
 Component.belongsTo(Category, { foreignKey: 'category_id' });
 Category.hasMany(Component, { foreignKey: 'category_id' });
 
-FinishedComponent.belongsTo(Component, { foreignKey: 'component_id' });
-Component.hasMany(FinishedComponent, { foreignKey: 'component_id' });
+FinishedProducts.belongsTo(Product, { foreignKey: 'product_id' });
+Product.hasMany(FinishedProducts, { foreignKey: 'product_id' });
 
-FinishedStore.belongsTo(FinishedComponent, { foreignKey: 'finished_component_id' });
-FinishedComponent.hasOne(FinishedStore, { foreignKey: 'finished_component_id' });
+// FinishedStore.belongsTo(FinishedProducts, { foreignKey: 'finished_product_id' });
+// FinishedProducts.hasOne(FinishedStore, { foreignKey: 'finished_product_id' });
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
@@ -106,6 +106,6 @@ module.exports = {
   Component,
   Category,
   PurchaseStore,
-  FinishedComponent,
+  FinishedProducts,
   FinishedStore,
 };
