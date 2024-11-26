@@ -1,26 +1,29 @@
 const sequelize = require('../db');
 
- const getFinishedGoodsData = async (req, res) => {   
+const getFinishedGoodsData = async (req, res) => {   
   try {
-    const query = `SELECT
-    fp.manufactured_date AS "Manufactured_Date",
-    p.component_id AS "component_id",
-    p.component_name AS "component_name",
-    c.category_name AS "Component_Category",
-    fp.manufactured_quantity AS "Manufactured_Quantity",
-    fs.available_quantity AS "Available_Quantity"
-    FROM
-    finished_Components fp 
-    INNER JOIN Components p ON fp.component_id = p.component_id
-    INNER JOIN categories c ON p.category_id = c.category_id 
-    LEFT JOIN finished_store fs ON fs.finished_component_id = fp.finished_component_id`;     
-    const [results] = await sequelize.query(query);     
+    const query = `
+      SELECT
+        fp.manufactured_date AS "Manufactured_Date",
+        p.component_id AS "component_id",
+        p.component_name AS "component_name",
+        c.category_name AS "Component_Category",
+        fp.manufactured_quantity AS "Manufactured_Quantity",
+        fs.available_quantity AS "Available_Quantity"
+      FROM
+        finished_products fp
+      INNER JOIN product_component pc ON fp.product_id = pc.product_id
+      INNER JOIN components p ON pc.component_id = p.component_id
+      INNER JOIN categories c ON p.category_id = c.category_id
+      LEFT JOIN finished_store fs ON fs.product_id = fp.product_id
+    `;
+    const [results] = await sequelize.query(query);
     res.json(results);   
   } catch (error) {
-         console.error('Error fetching data:', error);
-        res.status(500).json({ message: 'Error fetching Component data' }); 
+    console.error('Error fetching data:', error);
+    res.status(500).json({ message: 'Error fetching finished goods data' }); 
   }
- };
+};
 
  const getRawMaterialInventoryData = async (req, res) => {
   try {
