@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  createProductComponent,
+  createProductComponents,
   getAllProductComponent,
   getProductComponentById,
   updateProductComponent,
@@ -20,34 +20,90 @@ const router = express.Router();
  * @swagger
  * /api/v1/productComponents:
  *   post:
- *     summary: Create a new ProductComponent
+ *     summary: Create one or multiple ProductComponents
  *     tags: [ProductComponents]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               product_id:
- *                 type: string
- *                 description: ID of the Product
- *                 example: "null"
- *               component_id:
- *                 type: string
- *                 description: ID of the Component
- *                 example: "null"
- *               quantity:
- *                 type: string
- *                 description: Quantity of Component in the Product
- *                 example: "10"
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 product_id:
+ *                   type: string
+ *                   description: ID of the Product
+ *                   example: "101"
+ *                 component_id:
+ *                   type: string
+ *                   description: ID of the Component (must be unique for the Product)
+ *                   example: "201"
+ *                 quantity:
+ *                   type: string
+ *                   description: Quantity of the Component in the Product
+ *                   example: "10"
  *     responses:
  *       201:
- *         description: ProductComponent created successfully
+ *         description: ProductComponents created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ProductComponents created successfully."
+ *                 components:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       product_id:
+ *                         type: string
+ *                         description: ID of the Product
+ *                         example: "101"
+ *                       component_id:
+ *                         type: string
+ *                         description: ID of the Component
+ *                         example: "201"
+ *                       quantity:
+ *                         type: string
+ *                         description: Quantity of the Component
+ *                         example: "10"
  *       400:
- *         description: Validation error
+ *         description: Validation error or duplicate component ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       component_id:
+ *                         type: string
+ *                         description: The duplicate or invalid Component ID
+ *                         example: "201"
+ *                       message:
+ *                         type: string
+ *                         description: Error message for the invalid component
+ *                         example: "Component ID '201' already exists."
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *                   example: "An unexpected error occurred."
  */
-router.post('/', createProductComponent);
+router.post('/', createProductComponents);
 
 /**
  * @swagger

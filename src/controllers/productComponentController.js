@@ -2,66 +2,69 @@ const ProductComponent = require('../models/productComponents');
 const { z } = require('zod');
 
 const ProductComponentSchema = z.object({
-    product_id: z.string().min(1, "Product ID is required"),
+    product_id: z.string().nullable().optional(),
     component_id: z.string().min(1, "Component ID is required"),
     quantity: z.string().nonempty("Quantity must be greater than 0"),
-});
-
-exports.createProductComponent = async (req, res, next) => {
+  });
+  
+  exports.createProductComponents = async (req, res, next) => {
     try {
-        const { product_id, component_id } = req.body;
-        if (!product_id) {
-            return res.status(400).json({ message: "The product_id is required."})
-        }
-        if (!component_id) {
-            return res.status(400).json({ message: "The component_id is required."})
-        }
-        const validatedData = ProductComponentSchema.parse(req.body);
-
-        const dataToSave = {
-            ...validatedData,
-            product_id: validatedData?.product_id
-              ? parseInt(validatedData.product_id, 10)
-              : null, 
-            component_id: validatedData?.component_id
-              ? parseInt(validatedData.component_id, 10)
-              : null, 
-            quantity: validatedData?.quantity
-              ? parseInt(validatedData.quantity, 10)
-              : null, 
-          };
-    
-        const existingProductComponent = await ProductComponent.findOne({
-            where: {
-                product_id: validatedData.product_id,
-                component_id: validatedData.component_id,
-            },
-        });
-
-        if (existingProductComponent) {
-            return res.status(400).json({
-                message: "This component is already added to this product.",
+      const payload = req.body;
+  
+      if (!Array.isArray(payload)) {
+        return res.status(400).json({ message: "Payload must be an array of components." });
+      }
+  
+      const validationErrors = [];
+      const validComponents = [];
+  
+      for (const component of payload) {
+        try {
+          const validatedData = ProductComponentSchema.parse(component);
+  
+          // Check for uniqueness in the database
+          const existingComponent = await ProductComponent.findOne({
+            where: { component_id: validatedData.component_id },
+          });
+  
+          if (existingComponent) {
+            validationErrors.push({
+              component_id: validatedData.component_id,
+              message: `Component ID '${validatedData.component_id}' already exists.`,
             });
+          } else {
+            validComponents.push({
+              product_id: validatedData.product_id ? parseInt(validatedData.product_id, 10) : null,
+              component_id: validatedData.component_id ? parseInt(validatedData.component_id, 10) : null,
+              quantity: validatedData.quantity ? parseInt(validatedData.quantity, 10) : null,
+            });
+          }
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            validationErrors.push({
+              component_id: component.component_id || null,
+              message: error.errors[0].message,
+            });
+          }
         }
-
-        const newProductComponent = await ProductComponent.create(validatedData);
-        return res.status(201).json(newProductComponent);
+      }
+  
+      // If there are validation errors, return them
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ errors: validationErrors });
+      }
+  
+      // Save all valid components to the database
+      const createdComponents = await ProductComponent.bulkCreate(validComponents);
+      return res.status(201).json(createdComponents);
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            if (process.env.NODE_ENV === 'production') {
-                return res.status(400).json({ message: error.errors[0].message });
-            } else {
-                return res.status(400).json({ errors: error.errors });
-            }
-        }
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ message: "This component is already added to this product." });
-        }
-        
-        next(error);
+      if (error.name === "SequelizeUniqueConstraintError") {
+        return res.status(400).json({ message: "Component ID already exists in the database." });
+      }
+      next(error);
     }
-};
-
+  };
+  
 exports.getAllProductComponent = async (req, res, next) => {
     try {
         const ProductComponents = await ProductComponent.findAll();
