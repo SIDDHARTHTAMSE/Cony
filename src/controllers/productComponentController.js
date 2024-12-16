@@ -24,13 +24,17 @@ const ProductComponentSchema = z.object({
   
           // Check for uniqueness in the database
           const existingComponent = await ProductComponent.findOne({
-            where: { component_id: validatedData.component_id },
+            where: { 
+              component_id: validatedData.component_id,
+              product_id: validatedData.product_id,
+             },
           });
   
           if (existingComponent) {
             validationErrors.push({
               component_id: validatedData.component_id,
-              message: `Component ID '${validatedData.component_id}' already exists.`,
+              product_id: validatedData.product_id,
+              message: `Component ID '${validatedData.component_id}' already exists for Product ID '${validatedData.product_id}'.`,
             });
           } else {
             validComponents.push({
