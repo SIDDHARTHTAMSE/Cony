@@ -118,3 +118,45 @@ exports.deleteOrderConfig = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.confirmOrder = async (req, res, next) => {
+  try {
+    const orders = req.body;
+
+    const processedOrders = orders.map((order) => {
+      let canConfirm = true;
+
+      const updatedComponents = order.components.map((component) => {
+        const { required_quantity, available_quantity } = component;
+
+        const shortage = Math.max(required_quantity - (available_quantity || 0), 0);
+
+        if (shortage > 0) {
+          canConfirm = false;
+        }
+
+        return {
+          ...component,
+          shortage,
+        };
+      });
+
+      return {
+        order_id: order.order_id,
+        product_id: order.product_id,
+        product_name: order.product_name,
+        components: updatedComponents,
+        can_confirm: canConfirm,
+        message: canConfirm
+          ? "You can confirm the order."
+          : "Some components have shortages. You cannot confirm the order.",
+      };
+    });
+
+    res.status(200).json({
+      orders: processedOrders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

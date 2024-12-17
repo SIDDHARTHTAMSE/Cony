@@ -1,6 +1,6 @@
 // routes/OrderConfigRoutes.js
 const express = require('express');
-const { createOrderConfig, getAllOrderConfig, getOrderConfigById, updateOrderConfig, deleteOrderConfig } = require('../controllers/orderConfigController');
+const { createOrderConfig, getAllOrderConfig, getOrderConfigById, updateOrderConfig, deleteOrderConfig, confirmOrder } = require('../controllers/orderConfigController');
 const router = express.Router();
 
 /**
@@ -149,5 +149,7 @@ router.put('/:id', updateOrderConfig);
  *         description: OrderConfig not found
  */
 router.delete('/:id', deleteOrderConfig);
+
+router.post('/confirm-order', confirmOrder);
 
 module.exports = router;
