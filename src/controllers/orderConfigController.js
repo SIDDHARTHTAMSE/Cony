@@ -1,4 +1,5 @@
 const OrderConfig = require('../models/orderConfig');
+const PurchasedStore = require('../models/purchasedStore');
 const { z } = require('zod');
 
 const OrderConfigSchema = z.object({
@@ -119,39 +120,70 @@ exports.deleteOrderConfig = async (req, res, next) => {
     }
 };
 
+
 exports.confirmOrder = async (req, res, next) => {
   try {
     const orders = req.body;
 
-    const processedOrders = orders.map((order) => {
-      let canConfirm = true;
+    if (!orders || orders.length === 0) {
+      return res.status(400).json({ message: "No orders provided in the request." });
+    }
 
-      const updatedComponents = order.components.map((component) => {
-        const { required_quantity, available_quantity } = component;
+    const processedOrders = await Promise.all(
+      orders.map(async (order) => {
+        let canConfirm = true;
 
-        const shortage = Math.max(required_quantity - (available_quantity || 0), 0);
-
-        if (shortage > 0) {
-          canConfirm = false;
+        const existingOrderConfig = await OrderConfig.findOne({ 
+          where: { order_config_id: order.order_id } 
+        });
+        if (!existingOrderConfig) {
+          return {
+            message: `Order ID ${order.order_id} does not exist.`,
+          };
         }
 
-        return {
-          ...component,
-          shortage,
-        };
-      });
+        const updatedComponents = await Promise.all(
+          order.components.map(async (component) => {
+            const { component_id, required_quantity } = component;
 
-      return {
-        order_id: order.order_id,
-        product_id: order.product_id,
-        product_name: order.product_name,
-        components: updatedComponents,
-        can_confirm: canConfirm,
-        message: canConfirm
-          ? "You can confirm the order."
-          : "Some components have shortages. You cannot confirm the order.",
-      };
-    });
+            const purchasedComponent = await PurchasedStore.findOne({
+              where: { component_id },
+            });
+
+            if (!purchasedComponent) {
+              canConfirm = false;
+              return {
+                message: `Component ID ${component_id} does not exist in the store.`,
+              };
+            }
+
+            const available_quantity = purchasedComponent.available_quantity || 0;
+            const shortage = Math.max(required_quantity - available_quantity, 0);
+
+            if (shortage > 0) {
+              canConfirm = false;
+            }
+
+            return {
+              ...component,
+              available_quantity,
+              shortage,
+            };
+          })
+        );
+
+        return {
+          order_id: order.order_id,
+          product_id: order.product_id,
+          product_name: order.product_name,
+          components: updatedComponents,
+          can_confirm: canConfirm,
+          message: canConfirm
+            ? "You can confirm the order."
+            : "Some components have shortages or do not exist in the store. You cannot confirm the order.",
+        };
+      })
+    );
 
     res.status(200).json({
       orders: processedOrders,
