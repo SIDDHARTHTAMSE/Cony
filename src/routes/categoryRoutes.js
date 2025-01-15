@@ -1,6 +1,6 @@
 // routes/categories.js
 const express = require('express');
-const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory } = require('../controllers/categoryController');
+const { createCategory, getAllCategories, getCategoryById, getCategoryByName, updateCategory, deleteCategory, } = require('../controllers/categoryController');
 
 const router = express.Router();
 
@@ -81,6 +81,60 @@ router.get('/', getAllCategories);
  */
 router.get('/:id', getCategoryById);
 
+/**
+ * @swagger
+ * /api/v1/categories/name:
+ *   post:
+ *     summary: Get a category by its name
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               category_name:
+ *                 type: string
+ *                 example: "Electronics"
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 category_id:
+ *                   type: integer
+ *                   example: 1
+ *                 category_name:
+ *                   type: string
+ *                   example: "Electronics"
+ *       400:
+ *         description: Bad request - missing or invalid category_name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Category name is required"
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Category not found"
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/name', getCategoryByName);
 /**
  * @swagger
  * /api/v1/categories/{id}:

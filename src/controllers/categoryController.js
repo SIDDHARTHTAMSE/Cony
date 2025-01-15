@@ -61,6 +61,33 @@ exports.getCategoryById = async (req, res, next) => {
   }
 };
 
+exports.getCategoryByName = async(req, res, next) => {
+  try{
+    const { category_name } = req.body;
+
+    if (!category_name){
+      return res.status(404).json({ message: "Category name is required"});
+    }
+
+    const existingCategory = await Category.findOne({
+      where: { category_name },
+    });
+
+    if(!existingCategory){
+      return res.status(404).json({ message: "Category name is not found"});
+    }
+
+    if(process.env.NODE_ENV === 'Production') {
+      const { createdAt, updatedAt, ...categoryData} = existingCategory.get();
+      return res.status(200).json(categoryData);
+    } else {
+      return res.status(200).json(existingCategory);
+    }
+  } catch (error){
+    next(error);
+  }
+};
+
 //Update a Category by ID
 exports.updateCategory = async (req, res, next) => {
   try {
