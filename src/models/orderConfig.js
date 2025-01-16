@@ -20,6 +20,11 @@ const OrderConfig = sequelize.define('OrderConfig', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    is_confirmed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
 }, { tableName: 'order_config'});
 
 module.exports = OrderConfig;
