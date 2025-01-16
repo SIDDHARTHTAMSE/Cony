@@ -1,6 +1,6 @@
 // routes/ComponentRoutes.js
 const express = require('express');
-const { createComponent, getAllComponents, getComponentById, updateComponent, deleteComponent } = require('../controllers/componentController');
+const { createComponent, getAllComponents, getComponentById, getComponentsByName, updateComponent, deleteComponent } = require('../controllers/componentController');
 
 const router = express.Router();
 
@@ -146,6 +146,83 @@ router.get('/', getAllComponents);
  *         description: Component not found
  */
 router.get('/:id', getComponentById);
+
+/**
+ * @swagger
+ * /api/v1/Components/name:
+ *   post:
+ *     summary: Get a component by its name
+ *     tags: [Components]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               component_name:
+ *                 type: string
+ *                 example: "Resistor"
+ *                 description: Name of the component to retrieve
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the component
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     component_id:
+ *                       type: integer
+ *                       example: 1
+ *                     component_name:
+ *                       type: string
+ *                       example: "Resistor"
+ *                     description:
+ *                       type: string
+ *                       example: "An electronic component used to resist current flow."
+ *                 - type: object
+ *                   properties:
+ *                     component_id:
+ *                       type: integer
+ *                       example: 1
+ *                     component_name:
+ *                       type: string
+ *                       example: "Resistor"
+ *                     description:
+ *                       type: string
+ *                       example: "An electronic component used to resist current flow."
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-12-01T12:00:00Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-12-02T14:00:00Z"
+ *       404:
+ *         description: Component not found or name not provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Component Name required"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+router.post('/name', getComponentsByName);
 
 /**
  * @swagger

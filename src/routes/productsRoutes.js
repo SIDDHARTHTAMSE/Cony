@@ -1,6 +1,7 @@
 // routes/products.js
 const express = require('express');
-const { createProduct, getAllProduct, getProductById, updatedProduct, deleteProduct } = require('../controllers/productsController');
+const { createProduct, getAllProduct, getProductById, getProductByName, updatedProduct, deleteProduct } = require('../controllers/productsController');
+const { route } = require('./categoryRoutes');
 
 const router = express.Router();
 
@@ -80,6 +81,91 @@ router.get('/', getAllProduct);
  *         description: Product not found
  */
 router.get('/:id', getProductById);
+
+/**
+ * @swagger
+ * /api/v1/products/name:
+ *   post:
+ *     summary: Get a product by its name
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               product_name:
+ *                 type: string
+ *                 example: "Smartphone"
+ *                 description: Name of the product to retrieve
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     product_id:
+ *                       type: integer
+ *                       example: 101
+ *                     product_name:
+ *                       type: string
+ *                       example: "Smartphone"
+ *                     description:
+ *                       type: string
+ *                       example: "A high-end smartphone with advanced features."
+ *                     price:
+ *                       type: number
+ *                       format: float
+ *                       example: 599.99
+ *                 - type: object
+ *                   properties:
+ *                     product_id:
+ *                       type: integer
+ *                       example: 101
+ *                     product_name:
+ *                       type: string
+ *                       example: "Smartphone"
+ *                     description:
+ *                       type: string
+ *                       example: "A high-end smartphone with advanced features."
+ *                     price:
+ *                       type: number
+ *                       format: float
+ *                       example: 599.99
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-01-01T10:00:00Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-01-02T12:00:00Z"
+ *       404:
+ *         description: Product not found or name not provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product is not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+router.post('/name', getProductByName);
 
 /**
  * @swagger

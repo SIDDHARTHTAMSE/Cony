@@ -82,6 +82,33 @@ exports.getComponentById = async (req, res, next) => {
   }
 };
 
+exports.getComponentsByName = async (req, res, next) => {
+  try{
+    const { component_name } = req.body;
+
+    if (!component_name){
+      return res.status(404).json( {message: "Component Name required"} );
+    }
+
+    const existingComponent = await Component.findOne({
+      where: { component_name },
+    });
+
+    if(! existingComponent ) {
+      return res.status(404).json({ message: "Component Name is not found"});
+    }
+
+    if(process.env.NODE_ENV === 'Production') {
+      const { createdAt, updatedAt, ...categoryData} = existingComponent.get();
+      return res.status(200).json(categoryData);
+    } else {
+      return res.status(200).json(existingComponent);
+    }
+  } catch (error){
+    next(error);
+  }
+};
+
 //Update a Component by ID
 exports.updateComponent = async (req, res, next) => {
   try {

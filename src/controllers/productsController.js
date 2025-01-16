@@ -60,6 +60,33 @@ exports.getProductById = async (req, res, next) => {
     }
 };
 
+exports.getProductByName = async (req, res, next) => {
+    try{
+        const { product_name } = req.body;
+
+        if(!product_name) {
+            return res.status(404).json({ message: " Product name is required"});
+        }
+
+        const existingProducts = await Product.findOne({
+            where: { product_name },
+        });
+
+        if(!existingProducts){
+            return res.status(404).json({ message: " Product is not found"});
+        }
+
+        if(process.env.NODE_ENV === 'Production') {
+            const { createdAt, updatedAt, ...categoryData} = existingProducts.get();
+            return res.status(200).json(categoryData);
+        } else {
+            return res.status(200).json(existingProducts);
+        }
+    } catch (error){
+        next(error);
+    }
+};
+
 exports.updatedProduct = async (req, res, next) => {
     try {
         const { id } = req.params;
