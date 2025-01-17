@@ -150,6 +150,117 @@ router.put('/:id', updateOrderConfig);
  */
 router.delete('/:id', deleteOrderConfig);
 
+/**
+ * @swagger
+ * /api/v1/order-config/confirm-order:
+ *   post:
+ *     summary: Confirm an order based on availability of components in the store
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               order_config_id:
+ *                 type: integer
+ *                 example: 123
+ *                 description: The ID of the order configuration to confirm
+ *     responses:
+ *       200:
+ *         description: The order can be confirmed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "The order can be confirmed."
+ *                 order_details:
+ *                   type: object
+ *                   properties:
+ *                     order_config_id:
+ *                       type: integer
+ *                       example: 123
+ *                     product_id:
+ *                       type: integer
+ *                       example: 456
+ *                     order_quantity:
+ *                       type: integer
+ *                       example: 10
+ *                     components:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           component_id:
+ *                             type: integer
+ *                             example: 789
+ *                           message:
+ *                             type: string
+ *                             example: "Component ID 789 is available for order."
+ *                           canConfirm:
+ *                             type: boolean
+ *                             example: true
+ *       400:
+ *         description: The order cannot be confirmed due to unavailable components or missing order_config_id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "The order cannot be confirmed. Some components are not available."
+ *                 order_details:
+ *                   type: object
+ *                   properties:
+ *                     order_config_id:
+ *                       type: integer
+ *                       example: 123
+ *                     product_id:
+ *                       type: integer
+ *                       example: 456
+ *                     order_quantity:
+ *                       type: integer
+ *                       example: 10
+ *                     components:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           component_id:
+ *                             type: integer
+ *                             example: 789
+ *                           message:
+ *                             type: string
+ *                             example: "Component ID 789, is insufficient"
+ *                           canConfirm:
+ *                             type: boolean
+ *                             example: false
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Order not found."
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 router.post('/confirm-order', confirmOrder);
 
 module.exports = router;
