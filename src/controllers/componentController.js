@@ -60,11 +60,23 @@ exports.createComponent = async (req, res, next) => {
 exports.getAllComponents = async (req, res, next) => {
   try {
     const Components = await Component.findAll();
-    res.status(200).json(Components);
+    const updatedComponents = Components.map((component) => {
+      // Convert the Sequelize instance to a plain object
+      const plainComponent = component.toJSON();
+      const { category_id, ...rest } = plainComponent;
+      return {
+        ...rest,
+        categoryId: category_id,
+      };
+    });
+
+    console.log(updatedComponents);
+    res.status(200).json(updatedComponents);
   } catch (error) {
     next(error);
   }
 };
+
 
 //Get a Component by ID
 exports.getComponentById = async (req, res, next) => {
