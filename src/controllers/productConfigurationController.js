@@ -64,6 +64,7 @@ const getOrderManagement = async (req, res) => {
                 oc.product_id AS "Product_ID",
                 p.product_name AS "Product_Name",
                 oc.order_quantity AS "Order_Quantity",
+                oc.is_confirmed AS "Is_Confirmed",
                 c.component_id AS "Component_ID",
                 c.component_name AS "Component_Name",
                 (oc.order_quantity * pc.quantity) AS "Total_Required_Quantity",
@@ -91,17 +92,21 @@ const getOrderManagement = async (req, res) => {
                     product_id: row.Product_ID,
                     product_name: row.Product_Name,
                     order_quantity: row.Order_Quantity,
+                    is_confirmed: row.Is_Confirmed,
                     components: []
                 };
                 acc.push(order);
             }
 
-            order.components.push({
-                component_id: row.Component_ID,
-                component_name: row.Component_Name,
-                required_quantity: row.Total_Required_Quantity,
-                available_quantity: row.Available_Quantity
-            });
+            const existingComponent = order.components.find(c => c.componentId === row.Component_ID);
+            if(!existingComponent){
+                order.components.push({
+                    component_id: row.Component_ID,
+                    component_name: row.Component_Name,
+                    required_quantity: row.Total_Required_Quantity,
+                    available_quantity: row.Available_Quantity
+                });
+            }
 
             return acc;
         }, []);

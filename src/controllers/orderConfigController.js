@@ -26,6 +26,7 @@ const OrderConfigSchema = z.object({
       const dataToSave = orders.map((order) => ({
         product_id: parseInt(order.product_id, 10),
         order_quantity: parseInt(order.order_quantity, 10),
+        is_confirmed: false,
       }));
   
       // Save all configurations to the database
@@ -201,12 +202,14 @@ exports.confirmOrder = async (req, res, next) => {
     const canConfirmOrder = componentCheckResults.every(result => result.canConfirm);
 
     if (canConfirmOrder) {
+      await orderConfig.update({ is_confirmed: true });
       return res.status(200).json({
         message: "The order can be confirmed.",
         order_details: {
           order_config_id,
           product_id,
           order_quantity,
+          is_confirmed: true,
           components: componentCheckResults
         }
       });
