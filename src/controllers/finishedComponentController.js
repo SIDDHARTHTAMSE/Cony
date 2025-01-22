@@ -3,7 +3,6 @@ const FinishedComponent = require('../models/finishedcomponent');
 const Component = require('../models/component');
 const FinishedStore = require('../models/finishedStore')
 
-// Define Zod schema for finished Component validation
 const finishedComponentSchema = z.object({
   component_id: z.string().nonempty("Component ID must be a positive integer"),
   manufactured_date: z.string().nonempty("Manufactured date is required")
@@ -32,25 +31,20 @@ exports.createFinishedComponent = async (req, res, next) => {
   const { component_id, manufactured_date, manufactured_quantity } = req.body;
 
   try {
-    // Check if Component exists
     const Components = await Component.findByPk(component_id);
     if (!Components) {
       return res.status(404).json({ message: 'Component not found' });
     }
 
-    // Check if entry exists in FinishedStore
     const finishedStoreEntry = await FinishedStore.findOne({ where: { component_id } });
 
     if (finishedStoreEntry) {
-      // Update existing available quantity
       finishedStoreEntry.available_quantity += manufactured_quantity;
       await finishedStoreEntry.save();
     } else {
-      // Create a new FinishedStore entry
       await FinishedStore.create({ component_id, available_quantity: manufactured_quantity });
     }
 
-    // Create FinishedComponent record
     const newFinishedComponent = await FinishedComponent.create({
       component_id,
       manufactured_date,

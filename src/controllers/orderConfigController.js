@@ -8,31 +8,26 @@ const OrderConfigSchema = z.object({
     order_quantity: z.string().nonempty("Order Quantity must be greater than 0"),
   });
   
-  // Support both single object and array
   const OrderConfigInputSchema = z.union([
-    OrderConfigSchema,               // Single object
-    z.array(OrderConfigSchema),      // Array of objects
+    OrderConfigSchema,               
+    z.array(OrderConfigSchema),
   ]);
-  
+
+// Create a new OrderConfig
   exports.createOrderConfig = async (req, res, next) => {
     try {
-      // Validate the input as either a single object or an array
       const validatedInput = OrderConfigInputSchema.parse(req.body);
   
-      // Normalize to an array for consistent processing
       const orders = Array.isArray(validatedInput) ? validatedInput : [validatedInput];
   
-      // Convert and save each order configuration
       const dataToSave = orders.map((order) => ({
         product_id: parseInt(order.product_id, 10),
         order_quantity: parseInt(order.order_quantity, 10),
         is_confirmed: false,
       }));
   
-      // Save all configurations to the database
       const newOrderConfigs = await OrderConfig.bulkCreate(dataToSave);
   
-      // Respond with the saved configurations
       res.status(201).json(newOrderConfigs);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -46,7 +41,7 @@ const OrderConfigSchema = z.object({
     }
   };
   
-
+// Get all Order Config
 exports.getAllOrderConfig = async (req, res, next) => {
     try {
         const OrderConfigs = await OrderConfig.findAll();
@@ -56,6 +51,7 @@ exports.getAllOrderConfig = async (req, res, next) => {
     }
 };
 
+// Get a Order Config by ID 
 exports.getOrderConfigById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -71,6 +67,7 @@ exports.getOrderConfigById = async (req, res, next) => {
     }
 };
 
+// Update a Order Config by ID 
 exports.updateOrderConfig = async(req, res, next) => {
     try {
         const { id } = req.params;
@@ -107,6 +104,7 @@ exports.updateOrderConfig = async(req, res, next) => {
     }
 };
 
+// Delete a Order Config ID
 exports.deleteOrderConfig = async (req, res, next) => {
     try {
         const { id } = req.params;

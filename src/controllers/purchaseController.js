@@ -1,9 +1,8 @@
-const { z } = require('zod'); // Import Zod for validation
+const { z } = require('zod'); 
 const Purchase = require('../models/purchase');
 const Component = require('../models/component');
 const PurchaseStore = require('../models/purchasedStore');
 
-// Define Zod schema for purchase data validation
 const purchaseSchema = z.object({
   purchase_date: z.string().nonempty("Purchase date is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
   purchased_quantity: z.string().min(1, "Purchased quantity must be a positive number"),
@@ -13,7 +12,6 @@ const purchaseSchema = z.object({
 // Create a new Purchase
 exports.createPurchase = async (req, res, next) => {
   try {
-    // Validate request data
     const validation = purchaseSchema.safeParse(req.body);
 
     if (!validation.success) {
@@ -22,31 +20,25 @@ exports.createPurchase = async (req, res, next) => {
 
     const { purchase_date, purchased_quantity, component_id } = req.body;
 
-    // Prepare data for saving
     const dataToSave = {
       purchase_date,
       purchased_quantity: parseInt(purchased_quantity, 10),
       component_id: parseInt(component_id, 10),
     };
 
-    // Check if Component exists
     const componentExists = await Component.findByPk(dataToSave.component_id);
     if (!componentExists) {
       return res.status(404).json({ message: 'Component not found' });
     }
 
-    // Create the new purchase record
     const newPurchase = await Purchase.create(dataToSave);
 
-    // Find or update the PurchaseStore entry related to this component
     const purchaseStoreEntry = await PurchaseStore.findOne({ where: { component_id: dataToSave.component_id } });
 
     if (purchaseStoreEntry) {
-      // If the PurchaseStore entry exists, update the available_quantity by adding the purchased_quantity
       purchaseStoreEntry.available_quantity += dataToSave.purchased_quantity;
       await purchaseStoreEntry.save();
     } else {
-      // If no PurchaseStore entry exists, create a new one with the purchased_quantity as the available quantity
       await PurchaseStore.create({
         component_id: dataToSave.component_id,
         available_quantity: dataToSave.purchased_quantity,
@@ -87,17 +79,16 @@ exports.getPurchaseById = async (req, res, next) => {
 exports.updatePurchase = async (req, res, next) => {
   const { id } = req.params;
   
-  // Validate request body with partial schema
   const validation = purchaseSchema.partial().safeParse(req.body);
 
   const dataToSave = {
     ...validation,
     purchased_quantity: validation?.purchased_quantity
       ? parseInt(validation.purchased_quantity, 10)
-      : null, // Convert to integer or null
+      : null,
     component_id: validation?.component_id
       ? parseInt(validation.component_id, 10)
-      : null, // Convert to integer or null
+      : null,
   };
 
   if (!validation.success) {
@@ -110,8 +101,7 @@ exports.updatePurchase = async (req, res, next) => {
     if (!purchase) {
       return res.status(404).json({ message: 'Purchase not found' });
     }
-
-    // Update fields if provided
+    
     purchase.purchase_date = purchase_date || purchase.purchase_date;
     purchase.purchased_quantity = purchased_quantity || purchase.purchased_quantity;
     await purchase.save();

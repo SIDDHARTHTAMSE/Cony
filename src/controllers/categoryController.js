@@ -1,7 +1,6 @@
 const Category = require('../models/category');
 const { z } = require('zod');
 
-// Zod schema for validating category data
 const categorySchema = z.object({
   category_name: z.string().min(1, "Category name is required"),
 });
@@ -25,7 +24,7 @@ exports.createCategory = async (req, res, next) => {
         return res.status(400).json({ errors: error.errors });
       }
     }
-    next(error);  // Pass the error to the global error handler
+    next(error); 
   }
 };
 
@@ -50,7 +49,6 @@ exports.getCategoryById = async (req, res, next) => {
     }
 
     if (process.env.NODE_ENV === 'Production') {
-      // In Production, remove createdAt and updatedAt
       const { createdAt, updatedAt, ...categoryData } = category.get();
       return res.status(200).json(categoryData);
     } else {
@@ -61,6 +59,7 @@ exports.getCategoryById = async (req, res, next) => {
   }
 };
 
+// Get a Category by name
 exports.getCategoryByName = async(req, res, next) => {
   try{
     const { category_name } = req.body;

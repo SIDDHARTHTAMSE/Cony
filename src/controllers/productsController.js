@@ -5,6 +5,7 @@ const productSchema = z.object({
     product_name: z.string().min(1, "Product name is required"),
 });
 
+// Create a new Product
 exports.createProduct = async (req, res, next) => {
     try {
         const { product_name } = req.body;
@@ -31,6 +32,7 @@ exports.createProduct = async (req, res, next) => {
     }
 };
 
+// Get All Products
 exports.getAllProduct = async (req, res, next) => {
     try {
         const products = await Product.findAll();
@@ -40,6 +42,7 @@ exports.getAllProduct = async (req, res, next) => {
     }
 };
 
+// Get a Product By ID
 exports.getProductById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -60,6 +63,7 @@ exports.getProductById = async (req, res, next) => {
     }
 };
 
+// Get a Product By Name
 exports.getProductByName = async (req, res, next) => {
     try{
         const { product_name } = req.body;
@@ -87,6 +91,7 @@ exports.getProductByName = async (req, res, next) => {
     }
 };
 
+// Update a Product By ID
 exports.updatedProduct = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -112,6 +117,7 @@ exports.updatedProduct = async (req, res, next) => {
     }
 };
 
+// Delete a Product By ID
 exports.deleteProduct = async (req, res, next) => {
     try {
         const { id } = req.params;

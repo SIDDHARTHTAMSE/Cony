@@ -3,7 +3,6 @@ const FinishedProducts = require('../models/finishedProducts');
 const Product = require('../models/products');
 const FinishedStore = require('../models/finishedStore')
 
-// Define Zod schema for finished component data validation
 const finishedProductsSchema = z.object({
   product_id: z.string().min(1, "Product ID is required"),
   manufactured_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, use YYYY-MM-DD"),
@@ -13,7 +12,6 @@ const finishedProductsSchema = z.object({
 // Create a new Finished Products
 exports.createFinishedProducts = async (req, res, next) => {
   try {
-    // Validate request data
     const validation = finishedProductsSchema.safeParse(req.body);
 
     if (!validation.success) {
@@ -22,42 +20,35 @@ exports.createFinishedProducts = async (req, res, next) => {
 
     const { product_id, manufactured_date, manufactured_quantity } = req.body;
 
-    // Prepare data for saving
     const dataToSave = {
       product_id: parseInt(product_id, 10),
       manufactured_date,
       manufactured_quantity: parseInt(manufactured_quantity, 10),
     };
 
-    // Check if Component exists
     const productExists = await Product.findByPk(dataToSave.product_id);
     if (!productExists) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Create or update the FinishedStore entry
     const finishedStoreEntry = await FinishedStore.findOne({
       where: { product_id: dataToSave.product_id },
     });
 
     if (finishedStoreEntry) {
-      // If the FinishedStore entry exists, update the available_quantity by adding manufactured_quantity
       finishedStoreEntry.available_quantity += dataToSave.manufactured_quantity;
       await finishedStoreEntry.save();
     } else {
-      // If no FinishedStore entry exists, create a new one with manufactured_quantity as the available_quantity
       await FinishedStore.create({
         product_id: dataToSave.product_id,
         available_quantity: dataToSave.manufactured_quantity,
       });
     }
 
-    // Create a new FinishedProduct record
     const newFinishedProduct = await FinishedProducts.create(dataToSave);
 
     res.status(201).json(newFinishedProduct);
   } catch (error) {
-    // Handle unexpected errors
     res.status(500).json({
       message: "Internal Server Error while creating Finished Products or updating inventory",
       error: error.message,

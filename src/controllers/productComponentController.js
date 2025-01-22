@@ -6,7 +6,8 @@ const ProductComponentSchema = z.object({
     component_id: z.string().min(1, "Component ID is required"),
     quantity: z.string().nonempty("Quantity must be greater than 0"),
   });
-  
+
+// Create a new Product Components
   exports.createProductComponents = async (req, res, next) => {
     try {
       const payload = req.body;
@@ -22,7 +23,6 @@ const ProductComponentSchema = z.object({
         try {
           const validatedData = ProductComponentSchema.parse(component);
   
-          // Check for uniqueness in the database
           const existingComponent = await ProductComponent.findOne({
             where: { 
               component_id: validatedData.component_id,
@@ -53,12 +53,10 @@ const ProductComponentSchema = z.object({
         }
       }
   
-      // If there are validation errors, return them
       if (validationErrors.length > 0) {
         return res.status(400).json({ errors: validationErrors });
       }
   
-      // Save all valid components to the database
       const createdComponents = await ProductComponent.bulkCreate(validComponents);
       return res.status(201).json(createdComponents);
     } catch (error) {
@@ -68,7 +66,8 @@ const ProductComponentSchema = z.object({
       next(error);
     }
   };
-  
+
+// Get a All Product Components
 exports.getAllProductComponent = async (req, res, next) => {
     try {
         const ProductComponents = await ProductComponent.findAll();
@@ -78,6 +77,7 @@ exports.getAllProductComponent = async (req, res, next) => {
     }
 };
 
+// Get a Product Components By ID
 exports.getProductComponentById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -93,6 +93,7 @@ exports.getProductComponentById = async (req, res, next) => {
     }
 };
 
+// Update a Product Components By ID
 exports.updateProductComponent = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -131,6 +132,7 @@ exports.updateProductComponent = async (req, res, next) => {
     }
 };
 
+// Delete a Product Component By ID
 exports.deleteProductComponent = async (req, res, next) => {
     try {
         const { id } = req.params;

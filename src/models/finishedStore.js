@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db'); // Import your DB instance
+const sequelize = require('../db'); 
 const Product = require('../models/products'); 
 
 const FinishedStore = sequelize.define(
@@ -8,7 +8,7 @@ const FinishedStore = sequelize.define(
     finished_store_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, // Optional auto-increment ID
+      autoIncrement: true,
       allowNull: false,
     },
     product_id: {
@@ -21,7 +21,7 @@ const FinishedStore = sequelize.define(
     },
     available_quantity: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Mandatory field
+      allowNull: false,
     },
   },
   {

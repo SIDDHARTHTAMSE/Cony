@@ -1,7 +1,6 @@
 const Component = require('../models/component');
 const { z } = require('zod');
 
-// Zod schema for Component validation
 const ComponentsArraySchema = z.array (
   z.object({
     category_id: z.string().min(1, "Category ID must be greater than 0").optional(),
@@ -24,7 +23,6 @@ exports.createComponent = async (req, res, next) => {
           : null, 
       };
 
-    // Check if the component_name already exists
     const existingComponent = await Component.findOne({
       where: { component_name: validatedData.component_name },
     });
@@ -61,7 +59,6 @@ exports.getAllComponents = async (req, res, next) => {
   try {
     const Components = await Component.findAll();
     const updatedComponents = Components.map((component) => {
-      // Convert the Sequelize instance to a plain object
       const plainComponent = component.toJSON();
       const { category_id, ...rest } = plainComponent;
       return {
@@ -94,6 +91,7 @@ exports.getComponentById = async (req, res, next) => {
   }
 };
 
+// Get a component by name
 exports.getComponentsByName = async (req, res, next) => {
   try{
     const { component_name } = req.body;

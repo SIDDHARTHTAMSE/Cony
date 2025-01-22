@@ -2,7 +2,6 @@ const PurchaseStore = require('../models/purchasedStore');
 const Component = require('../models/component');
 const { z } = require('zod');
 
-// Validation schema for PurchaseStore data
 const purchaseStoreSchema = z.object({
   component_id: z.string().min(1, "Component ID is required"),
   available_quantity: z.string().min(1, "Available quantity must be a non-negative integer"),
@@ -11,7 +10,6 @@ const purchaseStoreSchema = z.object({
 // Create a new PurchaseStore
 exports.createPurchaseStore = async (req, res, next) => {
   try {
-    // Validate request data
     const validatedData = purchaseStoreSchema.parse(req.body);
 
     const dataToSave = {
@@ -24,28 +22,23 @@ exports.createPurchaseStore = async (req, res, next) => {
         : null,
     };
 
-    // Check if the Component exists before creating a PurchaseStore
     const ComponentExists = await Component.findByPk(validatedData.component_id);
     if (!ComponentExists) {
       return res.status(400).json({ message: "Component does not exist" });
     }
 
-    // Check if the PurchaseStore entry already exists for this component_id
     const existingPurchaseStore = await PurchaseStore.findOne({
       where: { component_id: validatedData.component_id },
     });
 
     if (existingPurchaseStore) {
-      // If PurchaseStore entry exists for the same component_id, return an error
       return res.status(400).json({ message: "component_id already exists in PurchaseStore" });
     }
 
-    // If no existing entry, create a new PurchaseStore entry
     const newPurchaseStore = await PurchaseStore.create(validatedData);
     return res.status(201).json(newPurchaseStore);
 
   } catch (error) {
-    // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         message: process.env.NODE_ENV === 'Production' ? error.errors[0].message : error.errors,
@@ -65,10 +58,10 @@ exports.getAllPurchaseStores = async (req, res, next) => {
   }
 };
 
-
+// Get a Purchase Store By ID
 exports.getPurchaseStoreById = async (req, res, next) => {
   try {
-    const { purchase_store_id } = req.params; // Use the correct param name
+    const { purchase_store_id } = req.params;
 
     if (!purchase_store_id) {
       return res.status(400).json({ message: "purchase_store_id parameter is missing" });
@@ -90,7 +83,7 @@ exports.getPurchaseStoreById = async (req, res, next) => {
 // Update PurchaseStore by ID
 exports.updatePurchaseStoreById = async (req, res, next) => {
   try {
-    const { purchase_store_id } = req.params; // Correct the param name if necessary
+    const { purchase_store_id } = req.params;
     const validatedData = purchaseStoreSchema.parse(req.body);
 
     const dataToSave = {
@@ -108,7 +101,6 @@ exports.updatePurchaseStoreById = async (req, res, next) => {
       return res.status(404).json({ message: "PurchaseStore not found" });
     }
 
-    // Update the record, referencing the correct column name
     await PurchaseStore.update(validatedData, { where: { purchase_store_id } });
     const updatedPurchaseStore = await PurchaseStore.findByPk(purchase_store_id);
     res.status(200).json(updatedPurchaseStore);
@@ -125,7 +117,7 @@ exports.updatePurchaseStoreById = async (req, res, next) => {
 // Delete PurchaseStore by ID
 exports.deletePurchaseStoreById = async (req, res, next) => {
   try {
-    const { purchase_store_id } = req.params; // Correct the param name if necessary
+    const { purchase_store_id } = req.params;
     const deleted = await PurchaseStore.destroy({ where: { purchase_store_id } });
 
     if (!deleted) {

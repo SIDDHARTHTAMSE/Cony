@@ -2,7 +2,6 @@ const FinishedStore = require('../models/finishedStore');
 const Product = require('../models/products');
 const { z } = require('zod');
 
-// Schema validation for FinishedStore
 const finishedStoreSchema = z.object({
   product_id: z.string().min(1, "Product ID is required"),
   available_quantity: z.string().min(0, "Available quantity must be a non-negative integer"),
@@ -11,7 +10,6 @@ const finishedStoreSchema = z.object({
 // Create a new FinishedStore
 exports.createFinishedStore = async (req, res, next) => {
   try {
-    // Validate request data
     const validatedData = finishedStoreSchema.parse(req.body);
 
     const dataToSave = {
@@ -24,32 +22,26 @@ exports.createFinishedStore = async (req, res, next) => {
         : null, 
     };
 
-    // Check if the Products exists before creating a FinishedStore
     const productExists = await Product.findByPk(dataToSave.product_id);
     if (!productExists) {
       return res.status(400).json({ message: "Products does not exist" });
     }
 
-    // Check if the FinishedStore entry already exists for this product_id
     const existingFinishedStore = await FinishedStore.findOne({
       where: { product_id: dataToSave.product_id },
     });
 
     if (existingFinishedStore) {
-      // If FinishedStore entry exists for the same product_id, return an error
       return res.status(400).json({
         message: `Product ID ${dataToSave.product_id} already exists in FinishedStore`,
       });
     }
 
-    // Create a new FinishedStore entry
     const newFinishedStore = await FinishedStore.create(dataToSave);
 
-    // Return the newly created FinishedStore
     res.status(201).json(newFinishedStore);
 
   } catch (error) {
-    // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       if (process.env.NODE_ENV === 'Production') {
         return res.status(400).json({ message: error.errors[0].message });
