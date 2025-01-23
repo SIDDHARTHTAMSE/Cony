@@ -5,15 +5,15 @@ const getFinishedGoodsData = async (req, res) => {
     const query = `
       SELECT
         fp.manufactured_date AS "Manufactured_Date",
-        p.product_id AS "product_id",
-        p.product_name AS "product_name",
+        fp.finished_product_id AS "Finished_Product_Id",
+        p.product_id AS "Product_Id",
+        p.product_name AS "Product_Name",
         fp.manufactured_quantity AS "Manufactured_Quantity",
         fs.available_quantity AS "Available_Quantity"
       FROM
         finished_products fp
-      INNER JOIN product_component pc ON fp.product_id = pc.product_id
-      INNER JOIN products p ON pc.product_id = p.product_id
-      LEFT JOIN finished_store fs ON fs.product_id = fp.product_id
+        LEFT JOIN finished_store fs ON fs.product_id = fp.product_id
+        INNER JOIN products p ON fs.product_id = p.product_id;
     `;
     const [results] = await sequelize.query(query);
     res.json(results);   
