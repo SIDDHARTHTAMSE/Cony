@@ -32,7 +32,7 @@ const ProductComponentSchema = z.object({
           if (existingComponent) {
             validationErrors.push({
               product_id: validatedData.product_id,
-              message: `Product id is '${validatedData.product_id}' already exists`,
+              message: `Components id '${validatedData.component_id}' already exists in '${validatedData.product_id} Product_id'`,
             });
           } else {
             validComponents.push({
