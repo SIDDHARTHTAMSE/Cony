@@ -25,16 +25,14 @@ const ProductComponentSchema = z.object({
   
           const existingComponent = await ProductComponent.findOne({
             where: { 
-              component_id: validatedData.component_id,
               product_id: validatedData.product_id,
              },
           });
   
           if (existingComponent) {
             validationErrors.push({
-              component_id: validatedData.component_id,
               product_id: validatedData.product_id,
-              message: `Component ID '${validatedData.component_id}' already exists for Product ID '${validatedData.product_id}'.`,
+              message: `Product id is '${validatedData.product_id}' already exists`,
             });
           } else {
             validComponents.push({
@@ -60,8 +58,10 @@ const ProductComponentSchema = z.object({
       const createdComponents = await ProductComponent.bulkCreate(validComponents);
       return res.status(201).json(createdComponents);
     } catch (error) {
-      if (error.name === "SequelizeUniqueConstraintError") {
-        return res.status(400).json({ message: "Component ID already exists in the database." });
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(400).json({
+            message: 'A product-component pair already exists in the database.',
+        });
       }
       next(error);
     }
