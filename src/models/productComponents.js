@@ -20,7 +20,7 @@ const ProductComponents = sequelize.define('ProductComponents', {
     component_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: false,
         references: {
             model: Component,
             key: 'component_id',
