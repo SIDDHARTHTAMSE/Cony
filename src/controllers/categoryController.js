@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Category = require('../models/category');
 const { z } = require('zod');
 
@@ -8,11 +9,17 @@ const categorySchema = z.object({
 //Create a new Category
 exports.createCategory = async (req, res, next) => {
   try {
+
     const validatedData = categorySchema.parse(req.body);
+
     const newCategory = await Category.create(validatedData);
+
     if (process.env.NODE_ENV === 'Production') {
       const { createdAt, updatedAt, ...categoryWithoutTimestamps } = newCategory.toJSON();
-      return res.status(201).json(categoryWithoutTimestamps);
+      return res.status(201).json({
+        category_id: categoryWithoutTimestamps.category_id,
+        category_name: categoryWithoutTimestamps.category_name
+      });
     }else{
       return res.status(201).json(newCategory);
     }
@@ -117,7 +124,10 @@ exports.updateCategory = async (req, res, next) => {
 exports.deleteCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleted = await Category.destroy({ where: { category_id: id } });
+
+    const deleted = await Category.destroy({ 
+      where: { category_id: id },
+    });
 
     if (!deleted) {
       return res.status(404).json({ message: "Category not found" });
@@ -125,6 +135,56 @@ exports.deleteCategory = async (req, res, next) => {
 
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
+    next(error);
+  }
+};
+
+// Soft Delete a Category by ID
+exports.softDeleteCategory = async (req, res, next) => {
+  try{
+    const { id } = req.params;
+
+    const existingCategory = await Category.findOne({ where: { category_id: id } });
+
+    if(! existingCategory){
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const deleteAt = new Date();
+    await existingCategory.update({ is_deleted: true, deleted_at: deleteAt});
+    
+    res.status(200).json({
+      deleteAt: existingCategory.deleted_at,
+      is_deleted: existingCategory.is_deleted
+    });
+  } catch(error){
+    next (error);
+  }
+};
+
+// Restore Soft Delete Category by ID 
+exports.restoreCategory = async (req, res, next) => {
+  try{
+    const { id } = req.params;
+
+    const existingCategory = await Category.findOne({ 
+      where: { 
+        category_id: id,
+        deleted_at: { [Op.ne]: null},
+        is_deleted: true 
+      }, 
+    });
+
+    if(!existingCategory) {
+      return res.status(404).json({ message: "Category not found or not deleted"});
+    }
+
+    existingCategory.is_deleted = false;
+    existingCategory.deleted_at = null;
+    await existingCategory.save();
+
+    res.status(200).json({ message: "Category restored successfully"});
+  } catch(error){
     next(error);
   }
 };

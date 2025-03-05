@@ -2,6 +2,7 @@
 const express = require('express');
 const {
   createFinishedStore,
+  fulfillOrder,
   getAllFinishedStores,
   getFinishedStoreById,
   updateFinishedStore,
@@ -30,7 +31,7 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               component_id:
+ *               product_id:
  *                 type: string
  *                 example: "1"
  *                 description: ID of the Component
@@ -46,7 +47,7 @@ const router = express.Router();
  *             schema:
  *               type: object
  *               properties:
- *                 component_id:
+ *                 product_id:
  *                   type: integer
  *                 available_quantity:
  *                   type: integer
@@ -74,7 +75,7 @@ router.post('/', createFinishedStore);
  *                   finished_store_id:
  *                     type: integer
  *                     example: "1"
- *                   component_id:
+ *                   product_id:
  *                     type: integer
  *                     example: "1"
  *                   available_quantity:
@@ -107,7 +108,7 @@ router.get('/', getAllFinishedStores);
  *                 finished_store_id:
  *                   type: integer
  *                   example: 1
- *                 component_id:
+ *                 product_id:
  *                   type: integer
  *                   example: "1"
  *                 available_quantity:
@@ -138,7 +139,7 @@ router.get('/:id', getFinishedStoreById);
  *           schema:
  *             type: object
  *             properties:
- *               component_id:
+ *               product_id:
  *                 type: string
  *                 example: "1"
  *               available_quantity:
@@ -155,7 +156,7 @@ router.get('/:id', getFinishedStoreById);
  *                 finished_store_id:
  *                   type: integer
  *                   example: 1
- *                 component_id:
+ *                 product_id:
  *                   type: integer
  *                   example: 1
  *                 available_quantity:

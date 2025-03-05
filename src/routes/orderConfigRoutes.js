@@ -1,6 +1,6 @@
 // routes/OrderConfigRoutes.js
 const express = require('express');
-const { createOrderConfig, getAllOrderConfig, getOrderConfigById, updateOrderConfig, deleteOrderConfig, confirmOrder } = require('../controllers/orderConfigController');
+const { createOrderConfig, getAllOrderConfig, getOrderConfigById, updateOrderConfig, deleteOrderConfig, confirmOrder, setOrderPriority } = require('../controllers/orderConfigController');
 const router = express.Router();
 
 /**
@@ -38,6 +38,33 @@ const router = express.Router();
  *         description: Invalid input
  */
 router.post('/', createOrderConfig);
+
+/**
+ * @swagger
+ * /api/v1/order-config/set-priority:
+ *   post:
+ *     summary: Mark an order as priority
+ *     tags: [OrderConfig]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               order_id:
+ *                 type: string
+ *                 description: ID of the order to prioritize
+ *                 example: "108"
+ *     responses:
+ *       200:
+ *         description: Order marked as priority successfully
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Order not found
+ */
+router.post('/set-priority', setOrderPriority);
 
 /**
  * @swagger

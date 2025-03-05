@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const FinishedComponent = require('../models/finishedcomponent');
+const FinishedComponent = require('../models/finishedProducts');
 const Component = require('../models/component');
 const FinishedStore = require('../models/finishedStore')
 

@@ -1,6 +1,6 @@
 // routes/categories.js
 const express = require('express');
-const { createCategory, getAllCategories, getCategoryById, getCategoryByName, updateCategory, deleteCategory, } = require('../controllers/categoryController');
+const { createCategory, getAllCategories, getCategoryById, getCategoryByName, updateCategory, deleteCategory, softDeleteCategory, restoreCategory } = require('../controllers/categoryController');
 
 const router = express.Router();
 
@@ -170,7 +170,7 @@ router.put('/:id', updateCategory);
  * @swagger
  * /api/v1/categories/{id}:
  *   delete:
- *     summary: Delete a category by ID
+ *     summary: Permanent Delete a category by ID
  *     tags: [Categories]
  *     parameters:
  *       - in: path
@@ -186,5 +186,79 @@ router.put('/:id', updateCategory);
  *         description: Category not found
  */
 router.delete('/:id', deleteCategory);
+
+/**
+ * @swagger
+ * /api/v1/categories/{id}/soft-delete:
+ *   delete:
+ *     summary: Delete a category by ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category to soft delete
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Category soft deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category soft deleted successfully
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category not found
+ */
+router.delete('/:id/soft-delete', softDeleteCategory);
+
+/**
+ * @swagger
+ * /api/v1/categories/{id}/restore:
+ *   patch:
+ *     summary: Restore a soft deleted category by ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category to restore
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Category restored successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category restored successfully
+ *       404:
+ *         description: Category not found or not soft deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category not found or not soft deleted
+ */
+router.patch('/:id/restore', restoreCategory);
 
 module.exports = router;

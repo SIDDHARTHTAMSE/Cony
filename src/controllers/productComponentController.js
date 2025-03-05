@@ -2,10 +2,19 @@ const ProductComponent = require('../models/productComponents');
 const { z } = require('zod');
 
 const ProductComponentSchema = z.object({
-    product_id: z.string().nullable().optional(),
-    component_id: z.string().min(1, "Component ID is required"),
-    quantity: z.string().nonempty("Quantity must be greater than 0"),
-  });
+  product_id: z.string().min(1, "Product ID is required"),
+  component_id: z.string().nullable().optional(),
+  subcomponents_id: z.string().nullable().optional(),
+  quantity: z.string().nonempty("Quantity must be greater than 0"),
+}).superRefine((data, ctx) => {
+  if (!data.component_id && !data.subcomponents_id) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Either Component ID or SubComponent ID is required",
+      path: ["component_id"],
+    });
+  }
+});
 
 // Create a new Product Components
   exports.createProductComponents = async (req, res, next) => {
@@ -36,8 +45,9 @@ const ProductComponentSchema = z.object({
             });
           } else {
             validComponents.push({
-              product_id: validatedData.product_id ? parseInt(validatedData.product_id, 10) : null,
+              product_id: parseInt(validatedData.product_id, 10),
               component_id: validatedData.component_id ? parseInt(validatedData.component_id, 10) : null,
+              subcomponents_id: validatedData.subcomponents_id? parseInt(validatedData.subcomponents_id, 10): null,
               quantity: validatedData.quantity ? parseInt(validatedData.quantity, 10) : null,
             });
           }
@@ -106,7 +116,10 @@ exports.updateProductComponent = async (req, res, next) => {
               : null, 
             component_id: validatedData?.component_id
               ? parseInt(validatedData.component_id, 10)
-              : null, 
+              : null,
+            subcomponents_id: validatedData?.subcomponents_id
+              ? parseInt(validatedData.subcomponents_id, 10)
+              : null,
             quantity: validatedData?.quantity
               ? parseInt(validatedData.quantity, 10)
               : null, 

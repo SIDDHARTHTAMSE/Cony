@@ -21,6 +21,25 @@ const Component = sequelize.define('Component', {
       key: 'category_id',
     },
   },
-}, { tableName: 'components' });
+  status: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false,
+  },
+  is_deleted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  deleted_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+}, { 
+  tableName: 'components',
+  paranoid: false,
+  timestamps: true,
+ }
+);
 
 module.exports = Component;

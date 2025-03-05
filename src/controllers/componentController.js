@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Component = require('../models/component');
 const { z } = require('zod');
 
@@ -38,7 +39,11 @@ exports.createComponent = async (req, res, next) => {
     }
 
     res.status(201).json({
-      components: savedComponents,
+      components: savedComponents.map(components => ({
+        component_id: components.component_id,
+        component_name: components.component_name,
+        category_id: components.categoryId
+      }))
     });
 
   } catch (error) {
@@ -164,6 +169,56 @@ exports.deleteComponent = async (req, res, next) => {
 
     res.status(200).json({ message: "Component deleted successfully" });
   } catch (error) {
+    next(error);
+  }
+};
+
+// Soft Delete a Component by ID
+exports.softDeleteComponents = async (req, res, next) => {
+  try{
+    const { id } = req.params;
+
+    const existingComponent = await Component.findOne({ where: { component_id: id } });
+
+    if(!existingComponent){
+      return res.status(404).json({ message: "Component not found"});
+    }
+
+    const createdAt = new Date();
+    await existingComponent.update({ is_deleted: true, deleted_at: createdAt });
+
+    res.status(200).json({
+      deleted_at: existingComponent.deleted_at,
+      is_deleted: existingComponent.is_deleted
+    });
+  } catch(error){
+    next(error);
+  }
+};
+
+//Restore Soft Delete Component by ID
+exports.restoreComponent = async(req, res, next) => {
+  try{
+    const {id } = req.params;
+
+    const existingComponent = await Component.findOne({
+      where: {
+        component_id: id,
+        deleted_at: { [Op.ne]: null },
+        is_deleted: true
+      },
+    });
+
+    if(!existingComponent){
+      return res.status(404).json({ message: "Component not found or not deleted"});
+    }
+
+    existingComponent.is_deleted = false;
+    existingComponent.deleted_at = null,
+    await existingComponent.save();
+
+    res.status(200).json({ message: "Component restored successfully"});
+  } catch(error){
     next(error);
   }
 };

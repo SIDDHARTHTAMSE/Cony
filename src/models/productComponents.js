@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const Product = require('../models/products');
 const Component = require('../models/component');
+const SubComponent = require('../models/subComponents');
 
 const ProductComponents = sequelize.define('ProductComponents', {
     product_component_id: {
@@ -19,11 +20,20 @@ const ProductComponents = sequelize.define('ProductComponents', {
     },
     component_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         unique: false,
         references: {
             model: Component,
             key: 'component_id',
+        },
+    },
+    subcomponents_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: false,
+        references: {
+            model: SubComponent,
+            key: 'subcomponents_id',
         },
     },
     quantity: {

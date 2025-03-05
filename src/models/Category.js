@@ -17,6 +17,20 @@ const Category = sequelize.define('Category', {
       }
     }
   },
-}, { tableName: 'categories' });
+  is_deleted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  deleted_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+},{
+    tableName: 'categories',
+    paranoid: false,
+    timestamps: true,
+  }
+);
 
 module.exports = Category;

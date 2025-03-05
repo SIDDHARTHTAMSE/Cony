@@ -20,7 +20,7 @@ const router = express.Router();
  * @swagger
  * /api/v1/productComponents:
  *   post:
- *     summary: Create one or multiple ProductComponents
+ *     summary: Create one or multiple Product Components
  *     tags: [ProductComponents]
  *     requestBody:
  *       required: true
@@ -33,19 +33,26 @@ const router = express.Router();
  *               properties:
  *                 product_id:
  *                   type: string
- *                   description: ID of the Product
- *                   example: "101"
+ *                   nullable: true
+ *                   description: ID of the Product (optional, must be a string).
+ *                   example: "18"
  *                 component_id:
  *                   type: string
- *                   description: ID of the Component (must be unique for the Product)
- *                   example: "201"
+ *                   nullable: true
+ *                   description: ID of the Component (required if `subcomponents_id` is null).
+ *                   example: "2"
+ *                 subcomponents_id:
+ *                   type: string
+ *                   nullable: true
+ *                   description: ID of the SubComponent (required if `component_id` is null).
+ *                   example: "50"
  *                 quantity:
  *                   type: string
- *                   description: Quantity of the Component in the Product
+ *                   description: Quantity of the Component (must be a string).
  *                   example: "10"
  *     responses:
  *       201:
- *         description: ProductComponents created successfully
+ *         description: ProductComponents created successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -61,18 +68,25 @@ const router = express.Router();
  *                     properties:
  *                       product_id:
  *                         type: string
- *                         description: ID of the Product
- *                         example: "101"
+ *                         nullable: true
+ *                         description: ID of the Product.
+ *                         example: "18"
  *                       component_id:
  *                         type: string
- *                         description: ID of the Component
- *                         example: "201"
+ *                         nullable: true
+ *                         description: ID of the Component.
+ *                         example: "2"
+ *                       subcomponents_id:
+ *                         type: string
+ *                         nullable: true
+ *                         description: ID of the SubComponent (optional, will be null if not provided).
+ *                         example: "50"
  *                       quantity:
  *                         type: string
- *                         description: Quantity of the Component
+ *                         description: Quantity of the Component.
  *                         example: "10"
  *       400:
- *         description: Validation error or duplicate component ID
+ *         description: Validation error (if both `component_id` and `subcomponents_id` are missing).
  *         content:
  *           application/json:
  *             schema:
@@ -83,25 +97,8 @@ const router = express.Router();
  *                   items:
  *                     type: object
  *                     properties:
- *                       component_id:
- *                         type: string
- *                         description: The duplicate or invalid Component ID
- *                         example: "201"
  *                       message:
  *                         type: string
- *                         description: Error message for the invalid component
- *                         example: "Component ID '201' already exists."
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Error message
- *                   example: "An unexpected error occurred."
  */
 router.post('/', createProductComponents);
 
@@ -161,7 +158,7 @@ router.get('/:id', getProductComponentById);
  * @swagger
  * /api/v1/productComponents/{id}:
  *   put:
- *     summary: Update a ProductComponent by ID
+ *     summary: Update a Product Component by ID
  *     tags: [ProductComponents]
  *     parameters:
  *       - in: path
@@ -169,7 +166,8 @@ router.get('/:id', getProductComponentById);
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the ProductComponent to update
+ *         description: The ID of the Product Component to update.
+ *         example: 24
  *     requestBody:
  *       required: true
  *       content:
@@ -179,18 +177,85 @@ router.get('/:id', getProductComponentById);
  *             properties:
  *               product_id:
  *                 type: string
- *                 example: "1"
+ *                 nullable: true
+ *                 description: ID of the Product (optional).
+ *                 example: "18"
  *               component_id:
  *                 type: string
+ *                 nullable: true
+ *                 description: ID of the Component (optional, required if `subcomponents_id` is null).
  *                 example: "2"
+ *               subcomponents_id:
+ *                 type: string
+ *                 nullable: true
+ *                 description: ID of the SubComponent (optional, required if `component_id` is null).
+ *                 example: "50"
  *               quantity:
  *                 type: string
- *                 example: "20"
+ *                 description: Quantity of the Component.
+ *                 example: "10"
  *     responses:
  *       200:
- *         description: Updated ProductComponent
+ *         description: Successfully updated Product Component.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 product_component_id:
+ *                   type: integer
+ *                   example: 24
+ *                 product_id:
+ *                   type: integer
+ *                   example: 18
+ *                 component_id:
+ *                   type: integer
+ *                   example: 2
+ *                 subcomponents_id:
+ *                   type: integer
+ *                   nullable: true
+ *                   example: 50
+ *                 quantity:
+ *                   type: integer
+ *                   example: 10
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-02-11T07:38:44.292Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-02-11T07:45:12.502Z"
+ *       400:
+ *         description: Validation error or bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Either Component ID or SubComponent ID is required."
  *       404:
- *         description: ProductComponent not found
+ *         description: Product Component not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ProductComponent not found or nothing to update."
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "An unexpected error occurred."
  */
 router.put('/:id', updateProductComponent);
 

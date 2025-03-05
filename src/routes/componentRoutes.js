@@ -1,6 +1,6 @@
 // routes/ComponentRoutes.js
 const express = require('express');
-const { createComponent, getAllComponents, getComponentById, getComponentsByName, updateComponent, deleteComponent } = require('../controllers/componentController');
+const { createComponent, getAllComponents, getComponentById, getComponentsByName, updateComponent, deleteComponent, softDeleteComponents, restoreComponent } = require('../controllers/componentController');
 
 const router = express.Router();
 
@@ -262,7 +262,7 @@ router.put('/:id', updateComponent);
  * @swagger
  * /api/v1/Components/{id}:
  *   delete:
- *     summary: Delete a Component by ID
+ *     summary: Permanent Delete a Component by ID
  *     tags: [Components]
  *     parameters:
  *       - in: path
@@ -278,5 +278,79 @@ router.put('/:id', updateComponent);
  *         description: Component not found
  */
 router.delete('/:id', deleteComponent);
+
+/**
+ * @swagger
+ * /api/v1/components/{id}/soft-delete:
+ *   delete:
+ *     summary: Delete a component by ID
+ *     tags: [Components]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the component to soft delete
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Component soft deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Component soft deleted successfully
+ *       404:
+ *         description: Component not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Component not found
+ */
+router.delete('/:id/soft-delete', softDeleteComponents);
+
+/**
+ * @swagger
+ * /api/v1/components/{id}/restore:
+ *   patch:
+ *     summary: Restore a soft-deleted component by ID
+ *     tags: [Components]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the component to restore
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Component restored successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Component restored successfully
+ *       404:
+ *         description: Component not found or not soft-deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Component not found or not soft deleted
+ */
+router.patch('/:id/restore', restoreComponent);
 
 module.exports = router;

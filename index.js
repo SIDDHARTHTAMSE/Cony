@@ -14,7 +14,9 @@ const orderConfigRouts = require('./src/routes/orderConfigRoutes')
 const productComponentRoutes = require('./src/routes/productComponentRoutes')
 const productConfigurationRoutes = require('./src/routes/productConfigurationRoutes')
 const purchaseMaterialsRoutes = require('./src/routes/purchaseMaterialRoutes')
+const subComponentsRoutes = require('./src/routes/subComponentsRoutes')
 const searchRoutes = require('./src/routes/searchRoutes')
+const subComponentStoreRoutes = require('./src/routes/subComponentStoreRoutes');
 
 const Component = require('./src/models/component')
 const Category = require('./src/models/category')
@@ -50,7 +52,9 @@ app.use('/api/v1/order-config', orderConfigRouts);
 app.use('/api/v1/productComponents', productComponentRoutes);
 app.use('/api/v1/productConfiguration', productConfigurationRoutes);
 app.use('/api/v1/inventory-management', purchaseMaterialsRoutes);
+app.use('/api/v1/subComponents', subComponentsRoutes);
 app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/subComponentStore', subComponentStoreRoutes)
 
 // Register associations
 Component.belongsTo(Category, { foreignKey: 'category_id' });

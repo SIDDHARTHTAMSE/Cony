@@ -1,7 +1,11 @@
 const { z } = require('zod');
+const { Op } = require("sequelize");
 const FinishedProducts = require('../models/finishedProducts');
 const Product = require('../models/products');
 const FinishedStore = require('../models/finishedStore')
+const ProductComponents = require('../models/productComponents');
+const PurchaseStore = require('../models/purchasedStore');
+const SubComponentStore = require('../models/subComponentStore');
 
 const finishedProductsSchema = z.object({
   product_id: z.string().min(1, "Product ID is required"),
@@ -13,41 +17,88 @@ const finishedProductsSchema = z.object({
 exports.createFinishedProducts = async (req, res, next) => {
   try {
     const validation = finishedProductsSchema.safeParse(req.body);
-
     if (!validation.success) {
       return res.status(400).json({ errors: validation.error.errors });
     }
 
     const { product_id, manufactured_date, manufactured_quantity } = req.body;
+    const manufacturedQty = parseInt(manufactured_quantity, 10);
 
-    const dataToSave = {
-      product_id: parseInt(product_id, 10),
-      manufactured_date,
-      manufactured_quantity: parseInt(manufactured_quantity, 10),
-    };
-
-    const productExists = await Product.findByPk(dataToSave.product_id);
+    // Validate Product
+    const productExists = await Product.findByPk(product_id);
     if (!productExists) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const finishedStoreEntry = await FinishedStore.findOne({
-      where: { product_id: dataToSave.product_id },
+    // Fetch required components and subcomponents for this product
+    const productComponents = await ProductComponents.findAll({
+      where: { product_id },
     });
 
+    if (!productComponents.length) {
+      return res.status(400).json({ message: "No components/subcomponents linked to this product" });
+    }
+
+    // Check and reduce required quantity from store
+    for (const pc of productComponents) {
+      const requiredQty = pc.quantity * manufacturedQty; // Total required for manufacturing
+
+      if (pc.component_id) {
+        // Handle Components
+        const componentStore = await PurchaseStore.findOne({
+          where: { component_id: pc.component_id },
+        });
+
+        if (!componentStore || componentStore.available_quantity < requiredQty) {
+          return res.status(400).json({
+            message: `Not enough quantity in store for component_id: ${pc.component_id}`,
+          });
+        }
+
+        // Deduct the quantity
+        componentStore.available_quantity -= requiredQty;
+        await componentStore.save();
+      }
+
+      if (pc.subcomponents_id) {
+        // Handle Subcomponents
+        const subComponentStore = await SubComponentStore.findOne({
+          where: { subcomponents_id: pc.subcomponents_id },
+        });
+
+        if (!subComponentStore || subComponentStore.quantity < requiredQty) {
+          return res.status(400).json({
+            message: `Not enough quantity in store for subcomponents_id: ${pc.subcomponents_id}`,
+          });
+        }
+
+        // Deduct the quantity
+        subComponentStore.quantity -= requiredQty;
+        await subComponentStore.save();
+      }
+    }
+
+    // Add product to FinishedStore
+    const finishedStoreEntry = await FinishedStore.findOne({ where: { product_id } });
+
     if (finishedStoreEntry) {
-      finishedStoreEntry.available_quantity += dataToSave.manufactured_quantity;
+      finishedStoreEntry.available_quantity += manufacturedQty;
       await finishedStoreEntry.save();
     } else {
       await FinishedStore.create({
-        product_id: dataToSave.product_id,
-        available_quantity: dataToSave.manufactured_quantity,
+        product_id,
+        available_quantity: manufacturedQty,
       });
     }
 
-    const newFinishedProduct = await FinishedProducts.create(dataToSave);
+    // Create a new entry in FinishedProducts
+    const newFinishedProduct = await FinishedProducts.create({
+      product_id,
+      manufactured_date,
+      manufactured_quantity: manufacturedQty,
+    });
 
-    res.status(201).json(newFinishedProduct);
+    res.status(201).json({ message: "Finished product created successfully", data: newFinishedProduct });
   } catch (error) {
     res.status(500).json({
       message: "Internal Server Error while creating Finished Products or updating inventory",

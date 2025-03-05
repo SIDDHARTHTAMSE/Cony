@@ -3,6 +3,7 @@ const Categories = require('../models/category');
 const Component = require('../models/component');
 const Product = require('../models/products');
 const FinishedProduct = require('../models/finishedProducts');
+const SubComponent = require('../models/subComponents');
 
 exports.searchItems = async (req, res, next) => {
     try{
@@ -40,11 +41,20 @@ exports.searchItems = async (req, res, next) => {
             include: [{ model: Product, where: { product_name: { [Op.like]: `%${searchTerm}%`} } }],
         });
 
+        const subComponent = await SubComponent.findAll({ 
+            where: {
+                subcomponents_name: {
+                    [Op.like]: `%${searchTerm}%`,
+                },
+            },
+        });
+
         if(
             component.length === 0 &&
             products.length === 0 &&
             categories.length === 0 &&
-            finishedProducts.length === 0
+            finishedProducts.length == 0 &&
+            subComponent.length == 0
         ){
             return res.status(404).json({ message: `No results found for ${searchTerm}.`});
         }
@@ -53,7 +63,8 @@ exports.searchItems = async (req, res, next) => {
             component,
             products,
             categories,
-            finishedProducts
+            finishedProducts,
+            subComponent
         };
 
         return res.status(200).json(results);

@@ -25,6 +25,16 @@ const OrderConfig = sequelize.define('OrderConfig', {
         allowNull: false,
         defaultValue: false,
     },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    is_priority: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
 }, { tableName: 'order_config'});
 
 module.exports = OrderConfig;
